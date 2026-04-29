@@ -26,8 +26,8 @@ const PROMPT = "kushagra@node:~ $";
 
 const PROJECTS = [
   {
-    name: "semantic-nlp-system",
-    summary: "AI-powered NLP pipeline standardizing messy GST datasets w/ embeddings (EY Internship)",
+    name: "semantic-gst-schema-standardization-engine",
+    summary: "AI-powered NLP pipeline standardizing messy GST datasets w/ embeddings",
     href: "https://github.com/kshgrshrn/Semantic-GST-Schema-Standardization-Engine"
   }
 ];
@@ -90,11 +90,11 @@ const CONTENT = {
   aboutAfterRepeat: [
     "the longer answer:",
     "",
-    "interested in the gap between ML research and production systems.",
-    "specifically: when embeddings lie, when pipelines silently fail,",
-    "and what interpretability can tell us about both.",
+    "interested in ML research and production-level systems.",
+    "specifically: mechanistic interpretability, ai alignment, financial ML applications,",
+    "and what interpretability can tell us about models.",
     "",
-    "outside that: aviation, systems thinking, bad sci-fi."
+    "outside that: physics, computational neuroscience, space-tech."
   ]
 };
 
@@ -133,7 +133,7 @@ let cursorActivityTimer;
 
 const COMMANDS = {
   help: {
-    description: " -- list",
+    description: " -- commands",
     pace: "quick",
     run: () => Object.entries(COMMANDS)
       .filter(([, cmd]) => !cmd.hidden)
@@ -141,7 +141,7 @@ const COMMANDS = {
   },
   sudo: {
     hidden: true,
-    run: () => ["node is not in the sudoers file. This incident will be reported."]
+    run: () => ["root access denied."]
   },
   matrix: {
     hidden: true,
@@ -151,7 +151,7 @@ const COMMANDS = {
     }
   },
   about: {
-    description: " -- direction",
+    description: " -- about me",
     pace: "slow",
     beforePrint: () => focusShift(),
     run: ({ count }) => count > 1 ? CONTENT.aboutAfterRepeat : CONTENT.about
@@ -165,7 +165,7 @@ const COMMANDS = {
     }
   },
   experience: {
-    description: " -- resume",
+    description: " -- previous roles",
     pace: "measured",
     run: async () => {
       const roles = [
@@ -254,7 +254,10 @@ const COMMANDS = {
   now: {
     description: " -- current",
     pace: "measured",
-    run: () => currentNow()
+    run: async () => {
+      await runNow();
+      return [];
+    }
   },
   writing: {
     hidden: true,
@@ -262,7 +265,7 @@ const COMMANDS = {
     run: () => CONTENT.writing
   },
   links: {
-    description: " -- external",
+    description: " -- work/social",
     pace: "quick",
     run: () => CONTENT.links
   },
@@ -270,12 +273,12 @@ const COMMANDS = {
     description: " -- download",
     pace: "quick",
     run: () => [
-      `cv -> <a href="/resume.pdf" target="_blank" rel="noreferrer">kushagra_sharan_resume.pdf</a>`,
+      `cv -> <a href="/resume.pdf" target="_blank" rel="noreferrer">kushagra_sharan_.pdf</a>`,
       "opens in new tab."
     ]
   },
   skills: {
-    description: " -- stack",
+    description: " -- tech stack",
     pace: "structured",
     run: async () => {
       const skillGroups = [
@@ -412,7 +415,7 @@ const COMMANDS = {
     }
   },
   clear: {
-    description: " -- reset",
+    description: " -- clear screen",
     run: async () => {
       await ghostClear();
       return [];
@@ -468,7 +471,7 @@ const COMMANDS = {
     }
   },
   theme: {
-    hidden: true,
+    description: " -- change theme",
     pace: "quick",
     run: () => {
       document.body.classList.remove(...THEMES.map(t => `theme-${t}`));
@@ -476,6 +479,73 @@ const COMMANDS = {
       const next = THEMES[themeIndex];
       if (next !== "default") document.body.classList.add(`theme-${next}`);
       return [`theme: ${next}`];
+    }
+  }
+  ,
+  scan: {
+    hidden: true,
+    run: async () => {
+      const checks = [
+        { label: "identity module",     ok: true  },
+        { label: "nlp pipeline",        ok: true  },
+        { label: "pretrained weights",  ok: true  },
+        { label: "ego",                 ok: false },
+        { label: "imposter syndrome",   ok: false },
+        { label: "coffee dependency",   ok: true  },
+        { label: "stack overflow cache",ok: true  },
+      ];
+
+      const block = document.createElement("div");
+      block.className = "output-block";
+      terminal.output.append(block);
+
+      const header = document.createElement("div");
+      header.className = "output-line";
+      header.textContent = "running system diagnostic...";
+      block.append(header);
+      scrollToBottom();
+      await wait(300);
+
+      for (const check of checks) {
+        const row = document.createElement("div");
+        row.className = "output-line scan-line";
+        block.append(row);
+        scrollToBottom();
+
+        for (let i = 0; i < 3; i++) {
+          row.textContent = `  checking ${check.label}${"·".repeat(i + 1)}`;
+          await wait(130);
+        }
+
+        const status = check.ok ? "[ OK ]" : "[ -- ]";
+        const cls    = check.ok ? "scan-ok" : "scan-fail";
+        row.textContent = "";
+        const label = document.createElement("span");
+        label.textContent = `  ${check.label.padEnd(30)}`;
+        const badge = document.createElement("span");
+        badge.className = cls;
+        badge.textContent = status;
+        row.append(label, badge);
+        await wait(80);
+      }
+
+      await wait(200);
+      const done = document.createElement("div");
+      done.className = "output-line";
+      done.textContent = "diagnostic complete. mostly functional.";
+      block.append(done);
+      scrollToBottom();
+
+      return [];
+    }
+  },
+  glitch: {
+    hidden: true,
+    run: async () => {
+      document.body.classList.add("is-glitching");
+      await wait(2000);
+      document.body.classList.remove("is-glitching");
+      return ["signal restored."];
     }
   }
 };
@@ -622,19 +692,68 @@ function timeBand() {
 }
 
 function currentNow() {
+  return []; // handled by runNow()
+}
+
+async function runNow() {
   const timeStudy = {
-    night: "studying: failure modes / safety",
+    night:   "studying: failure modes / safety",
     morning: "studying: systems before scale",
-    day: "studying: interpretability / safety",
+    day:     "studying: interpretability / safety",
     evening: "studying: abstractions under constraint",
-    late: "studying: compression / uncertainty"
+    late:    "studying: compression / uncertainty"
   };
 
-  return [
-    "building: ML systems",
-    timeStudy[timeBand()],
-    "thinking: physics as compression"
+  const block = document.createElement("div");
+  block.className = "output-block";
+  terminal.output.append(block);
+
+  const lines = [
+    { text: "building: ml systems", pulse: true },
+    { text: timeStudy[timeBand()], pulse: false },
+    { text: "thinking: physics as compression", pulse: false }
   ];
+
+  for (const item of lines) {
+    const row = document.createElement("div");
+    row.className = "output-line";
+    block.append(row);
+
+    if (item.pulse) {
+      const dot = document.createElement("span");
+      dot.className = "pulse-dot";
+      dot.textContent = "● ";
+      const txt = document.createElement("span");
+      txt.textContent = item.text;
+      row.append(dot, txt);
+    } else {
+      row.textContent = item.text;
+    }
+
+    scrollToBottom();
+    await wait(outputDelay(0, item.text, "measured"));
+  }
+
+  // Live clock line
+  const clockRow = document.createElement("div");
+  clockRow.className = "output-line now-clock";
+  block.append(clockRow);
+  scrollToBottom();
+
+  function updateClock() {
+    const now = new Date();
+    const h = String(now.getHours()).padStart(2, "0");
+    const m = String(now.getMinutes()).padStart(2, "0");
+    const s = String(now.getSeconds()).padStart(2, "0");
+    clockRow.textContent = `local time: ${h}:${m}:${s}`;
+  }
+
+  updateClock();
+  const clockInterval = window.setInterval(updateClock, 1000);
+
+  // Clean up interval when next command runs
+  const cleanup = () => window.clearInterval(clockInterval);
+  terminal.form.addEventListener("submit", cleanup, { once: true });
 }
 
 async function focusShift() {
@@ -1133,12 +1252,12 @@ async function boot() {
 
   // ASCII name banner — draws in letter by letter
   const banner = [
-    "██╗  ██╗██╗   ██╗███████╗██╗  ██╗",
-    "██║ ██╔╝██║   ██║██╔════╝██║  ██║",
-    "█████╔╝ ██║   ██║███████╗███████║",
-    "██╔═██╗ ██║   ██║╚════██║██╔══██║",
-    "██║  ██╗╚██████╔╝███████║██║  ██║",
-    "╚═╝  ╚═╝ ╚═════╝ ╚══════╝╚═╝  ╚═╝"
+    "██╗  ██╗██╗   ██╗███████╗██╗  ██╗ █████╗  ██████╗ ██████╗  █████╗ ",
+    "██║ ██╔╝██║   ██║██╔════╝██║  ██║██╔══██╗██╔════╝ ██╔══██╗██╔══██╗",
+    "█████╔╝ ██║   ██║███████╗███████║███████║██║  ███╗██████╔╝███████║",
+    "██╔═██╗ ██║   ██║╚════██║██╔══██║██╔══██║██║   ██║██╔══██╗██╔══██║",
+    "██║  ██╗╚██████╔╝███████╗██║  ██║██║  ██║╚██████╔╝██║  ██║██║  ██║",
+    "╚═╝  ╚═╝ ╚═════╝ ╚══════╝╚═╝  ╚═╝╚═╝  ╚═╝ ╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═╝"
   ];
 
   const bannerBlock = document.createElement("div");
