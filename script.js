@@ -14,9 +14,16 @@ const CONTENT = {
     "type help"
   ],
   about: [
+    "     /\\",
+    "    /  \\",
+    "   /____\\",
+    "",
     "Data Science & Engineering @ MIT Manipal.",
     "Direction: interpretability, alignment, ML systems, physics.",
-    "Work: semantic systems for noisy structured data."
+    "Work: semantic systems for noisy structured data.",
+    "",
+    `github   -> <a href="https://github.com/kshgrshrn" target="_blank" rel="noreferrer">https://github.com/kshgrshrn</a>`,
+    `linkedin -> <a href="https://www.linkedin.com/in/kushagrasharan/" target="_blank" rel="noreferrer">https://www.linkedin.com/in/kushagrasharan/</a>`
   ],
   now: [
     "building: ML systems",
@@ -29,6 +36,27 @@ const CONTENT = {
   links: [
     `<a href="https://github.com/kshgrshrn" target="_blank" rel="noreferrer">github</a>`,
     `<a href="https://www.linkedin.com/in/kushagrasharan/" target="_blank" rel="noreferrer">linkedin</a>`
+  ],
+  hidden: {
+    why: [
+      "understanding precedes control.",
+      "systems become useful when their failure modes become visible."
+    ],
+    trace: [
+      () => `trace: ${timeBand()} / local`,
+      "signal retained. context compressed."
+    ],
+    axiom: [
+      "explain the system before optimizing it.",
+      "alignment is an interface problem at scale."
+    ]
+  },
+  aboutAfterRepeat: [
+    "Same node. Lower verbosity.",
+    "Interpretability as instrumentation. Physics as constraint.",
+    "",
+    `github   -> <a href="https://github.com/kshgrshrn" target="_blank" rel="noreferrer">https://github.com/kshgrshrn</a>`,
+    `linkedin -> <a href="https://www.linkedin.com/in/kushagrasharan/" target="_blank" rel="noreferrer">https://www.linkedin.com/in/kushagrasharan/</a>`
   ]
 };
 
@@ -39,7 +67,9 @@ const terminal = {
   mirror: document.querySelector("#input-mirror"),
   history: [],
   historyIndex: 0,
-  busy: false
+  busy: false,
+  commandCounts: {},
+  rareEventSeen: false
 };
 
 let cursorActivityTimer;
@@ -47,11 +77,12 @@ let cursorActivityTimer;
 const COMMANDS = {
   help: {
     description: "commands",
-    run: () => Object.keys(COMMANDS)
+    run: () => visibleCommands()
   },
   about: {
     description: "direction",
-    run: () => CONTENT.about
+    beforePrint: () => focusShift(),
+    run: ({ count }) => count > 1 ? CONTENT.aboutAfterRepeat : CONTENT.about
   },
   projects: {
     description: "work",
@@ -75,8 +106,26 @@ const COMMANDS = {
       terminal.output.replaceChildren();
       return [];
     }
+  },
+  why: {
+    hidden: true,
+    run: () => CONTENT.hidden.why
+  },
+  trace: {
+    hidden: true,
+    run: () => resolveLines(CONTENT.hidden.trace)
+  },
+  axiom: {
+    hidden: true,
+    run: () => CONTENT.hidden.axiom
   }
 };
+
+function visibleCommands() {
+  return Object.entries(COMMANDS)
+    .filter(([, command]) => !command.hidden)
+    .map(([name]) => name);
+}
 
 function projectList() {
   if (!PROJECTS.length) return ["No projects listed."];
@@ -128,6 +177,26 @@ function outputDelay(index, line) {
   return 34 + lengthBias + phase;
 }
 
+function resolveLines(lines) {
+  return lines.map((line) => typeof line === "function" ? line() : line);
+}
+
+function timeBand() {
+  const hour = new Date().getHours();
+  if (hour < 5) return "night";
+  if (hour < 12) return "morning";
+  if (hour < 17) return "day";
+  if (hour < 21) return "evening";
+  return "late";
+}
+
+async function focusShift() {
+  await wait(150);
+  document.body.classList.add("is-focusing");
+  await wait(210);
+  document.body.classList.remove("is-focusing");
+}
+
 async function runCommand(rawCommand, options = {}) {
   const command = rawCommand.trim().toLowerCase();
   if (!command || terminal.busy) return;
@@ -136,18 +205,34 @@ async function runCommand(rawCommand, options = {}) {
 
   if (options.echo !== false) appendCommand(command);
   pushHistory(command);
+  const count = recordCommand(command);
 
   const entry = COMMANDS[command];
   if (!entry) {
     await printLines([`command not found: ${escapeHtml(command)}`, "type help"], "error");
   } else {
-    const lines = entry.run();
+    if (entry.beforePrint) await entry.beforePrint();
+    const lines = entry.run({ command, count });
     if (lines.length) await printLines(lines);
+    await maybePrintRareLine(command);
   }
 
   terminal.busy = false;
   terminal.input.focus();
   scrollToBottom();
+}
+
+function recordCommand(command) {
+  terminal.commandCounts[command] = (terminal.commandCounts[command] || 0) + 1;
+  return terminal.commandCounts[command];
+}
+
+async function maybePrintRareLine(command) {
+  if (terminal.rareEventSeen || command === "clear") return;
+  if (Math.random() >= 0.008) return;
+
+  terminal.rareEventSeen = true;
+  await printLines(["checksum drift: one bit left unclassified."]);
 }
 
 function pushHistory(command) {
