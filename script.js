@@ -19,7 +19,7 @@ function playKeyClick() {
   } catch (e) { /* silence audio errors */ }
 }
 
-const THEMES = ["default", "amber", "blue"];
+const THEMES = ["default", "amber", "blue", "rose"];
 let themeIndex = 0;
 
 const PROMPT = "kushagra@node:~ $";
@@ -103,7 +103,13 @@ const terminal = {
   form: document.querySelector("#terminal-form"),
   input: document.querySelector("#terminal-input"),
   mirror: document.querySelector("#input-mirror"),
-  history: [],
+  history: (() => {
+    try {
+      return JSON.parse(localStorage.getItem("ksh_history") || "[]").slice(-40);
+    } catch {
+      return [];
+    }
+  })(),
   historyIndex: 0,
   busy: false,
   commandCounts: {},
@@ -112,8 +118,11 @@ const terminal = {
   idleTimer: null,
   parallaxFrame: null,
   litLine: null,
+  ghostNode: null,
   eventsSeen: new Set()
 };
+
+const shortcutOverlay = document.getElementById("shortcut-overlay");
 
 const systemCursor = {
   node: document.querySelector("#system-cursor"),
@@ -135,9 +144,28 @@ const COMMANDS = {
   help: {
     description: " -- commands",
     pace: "quick",
-    run: () => Object.entries(COMMANDS)
-      .filter(([, cmd]) => !cmd.hidden)
-      .map(([name, cmd]) => `${name.padEnd(14)}${cmd.description ?? ""}`)
+    run: () => {
+      const categories = {
+        "CORE": ["about", "experience", "projects", "skills", "awards", "resume"],
+        "EXPLORE": ["now", "status", "neofetch", "links", "contact", "education", "theme"],
+        "UTILS": ["clear", "help"],
+      };
+
+      const lines = [];
+      for (const [cat, cmds] of Object.entries(categories)) {
+        lines.push("");
+        lines.push(`  ── ${cat} ` + "─".repeat(Math.max(0, 30 - cat.length)));
+        for (const name of cmds) {
+          if (COMMANDS[name]) {
+            lines.push(`  ${name.padEnd(16)}${COMMANDS[name].description?.replace(" -- ", "") ?? ""}`);
+          }
+        }
+      }
+      lines.push("");
+      lines.push("  hint: Tab → autocomplete   ? → shortcuts   && → chain");
+      lines.push("  hint: try git log, man, neofetch, ssh, vim, find ...");
+      return lines;
+    }
   },
   sudo: {
     hidden: true,
@@ -547,6 +575,314 @@ const COMMANDS = {
       document.body.classList.remove("is-glitching");
       return ["signal restored."];
     }
+  },
+  contact: {
+    description: " -- get in touch",
+    pace: "measured",
+    run: async () => {
+      const lines = [
+        `email   -> <a href="mailto:kushagrasharan2006@gmail.com">kushagrasharan2006@gmail.com</a>`,
+        `github  -> <a href="https://github.com/kshgrshrn" target="_blank" rel="noreferrer">github.com/kshgrshrn</a>`,
+        `linkedin -> <a href="https://www.linkedin.com/in/kushagrasharan/" target="_blank" rel="noreferrer">linkedin.com/in/kushagrasharan</a>`
+      ];
+
+      await printLines(lines, { pace: "measured" });
+      return [];
+    }
+  },
+
+  neofetch: {
+    description: " -- system info",
+    pace: "quick",
+    run: async () => {
+      const art = [
+        "  ╔══════╗  ",
+        "  ║ K  S ║  ",
+        "  ╠══════╣  ",
+        "  ║ DSE  ║  ",
+        "  ║ MIT  ║  ",
+        "  ╠══════╣  ",
+        "  ║ '28  ║  ",
+        "  ╚══════╝  ",
+      ];
+
+      const uptime_s = Math.floor((Date.now() - SESSION_START) / 1000);
+      const uptime_str = uptime_s < 60 ? `${uptime_s}s` : `${Math.floor(uptime_s / 60)}m ${uptime_s % 60}s`;
+
+      const info = [
+        ["", "kushagra@node"],
+        ["", "─".repeat(32)],
+        ["OS", "Portfolio OS  v2.1"],
+        ["Host", "kushagrasharan.me"],
+        ["Shell", "terminal.js  (JetBrains Mono)"],
+        ["Uptime", uptime_str],
+        ["", ""],
+        ["Degree", "B.Tech Data Science & Eng."],
+        ["School", "MIT Manipal  (2024–2028)"],
+        ["", ""],
+        ["Languages", "Python  Java  SQL  C"],
+        ["ML / NLP", "HuggingFace  Sentence-Trans."],
+        ["Infra", "FastAPI  Selenium  Git"],
+        ["", ""],
+        ["Role", "AI Intern @ Ernst & Young"],
+        ["Award", "NASA SSDC  Dick Edwards Award"],
+        ["", ""],
+        ["Status", "open to opportunities ●"],
+      ];
+
+      const block = document.createElement("div");
+      block.className = "output-block";
+      terminal.output.append(block);
+
+      const wrap = document.createElement("div");
+      wrap.className = "neofetch-wrap";
+      block.append(wrap);
+
+      // ASCII art column
+      const artCol = document.createElement("div");
+      artCol.className = "neofetch-art";
+      wrap.append(artCol);
+
+      // Info column
+      const infoCol = document.createElement("div");
+      infoCol.className = "neofetch-info";
+      wrap.append(infoCol);
+
+      // Animate art lines in
+      for (let i = 0; i < art.length; i++) {
+        const row = document.createElement("div");
+        row.textContent = art[i];
+        artCol.append(row);
+        await wait(35);
+      }
+
+      // Animate info rows
+      for (const [key, val] of info) {
+        const row = document.createElement("div");
+        if (!key && !val) {
+          row.className = "neofetch-row";
+          row.innerHTML = "&nbsp;";
+          infoCol.append(row);
+          scrollToBottom();
+          await wait(20);
+          continue;
+        }
+        if (!key && val) {
+          // header/separator
+          row.className = key === "" && val.startsWith("─") ? "neofetch-sep output-line" : "neofetch-name output-line";
+          row.textContent = val;
+          infoCol.append(row);
+          scrollToBottom();
+          await wait(30);
+          continue;
+        }
+        row.className = "neofetch-row output-line";
+        const k = document.createElement("span");
+        k.className = "neofetch-key";
+        k.textContent = key;
+        const v = document.createElement("span");
+        v.className = "neofetch-val";
+        v.textContent = val;
+        row.append(k, v);
+        infoCol.append(row);
+        scrollToBottom();
+        await wait(40);
+      }
+
+      // Color swatches
+      await wait(80);
+      const swatchRow = document.createElement("div");
+      swatchRow.className = "neofetch-colors output-line";
+      const colors = ["#505852", "#7a827c", "#a9b3aa", "#b6c0b4", "#d8ddd8", "#bc9d9d", "#c4956a", "#6db87a"];
+      for (const c of colors) {
+        const sw = document.createElement("div");
+        sw.className = "neofetch-swatch";
+        sw.style.background = c;
+        swatchRow.append(sw);
+      }
+      infoCol.append(swatchRow);
+      scrollToBottom();
+
+      return [];
+    }
+  },
+
+  "git log": {
+    hidden: true,
+    pace: "measured",
+    run: async () => {
+      // Intercept "git log" as a full phrase in executeCommand — see Section 4.
+      return [];
+    }
+  },
+
+  ls: {
+    hidden: true,
+    run: async ({ count }) => {
+      // Alias to help
+      return COMMANDS.help.run({ count });
+    }
+  },
+
+  man: {
+    hidden: true,
+    pace: "measured",
+    run: async () => {
+      const block = document.createElement("div");
+      block.className = "output-block";
+      terminal.output.append(block);
+
+      const sections = [
+        { heading: "NAME", body: "  kushagra-sharan — builder of ML systems, occasional team lead" },
+        { heading: "SYNOPSIS", body: "  kushagra [--intern] [--researcher] [--open-to-work]" },
+        { heading: "DESCRIPTION", body: `  Kushagra is a B.Tech Data Science & Engineering student at MIT Manipal
+  with production ML experience at Ernst & Young. Specializes in NLP
+  pipelines and financial ML systems. Has led 50+ person international
+  teams (NASA SSDC). Currently in semester 3 of 8.` },
+        { heading: "OPTIONS", body: `  --intern        available for internships
+  --collaborate   open to research projects
+  --hire          see contact` },
+        { heading: "SEE ALSO", body: "  experience(1), projects(1), resume(1), contact(1)" },
+        { heading: "AUTHOR", body: "  Kushagra Sharan <kushagrasharan2006@gmail.com>" },
+      ];
+
+      for (const s of sections) {
+        const heading = document.createElement("div");
+        heading.className = "output-line man-section";
+        heading.textContent = s.heading;
+        block.append(heading);
+        scrollToBottom();
+        await wait(60);
+
+        const body = document.createElement("div");
+        body.className = "output-line man-body";
+        body.textContent = s.body;
+        block.append(body);
+        scrollToBottom();
+        await wait(80);
+      }
+
+      return [];
+    }
+  },
+
+  ssh: {
+    hidden: true,
+    pace: "slow",
+    run: async () => [
+      "ssh: connect to host kushagrasharan.me port 22",
+      "Warning: Permanently added 'kushagrasharan.me' to the list of known hosts.",
+      "",
+      "Permission denied (publickey).",
+      "",
+      "→ try: contact"
+    ]
+  },
+
+  vim: {
+    hidden: true,
+    pace: "quick",
+    run: () => ["there is no escape. (hint: :q!)"]
+  },
+
+  nano: {
+    hidden: true,
+    pace: "quick",
+    run: () => ["you're not a nano person. use the terminal."]
+  },
+
+  grep: {
+    hidden: true,
+    pace: "measured",
+    run: () => [
+      "grep: pattern required.",
+      "",
+      `try: grep -r "passion" ./kushagra`,
+      "→    ./kushagra/core.py:  passion = [\"NLP\", \"ML systems\", \"physics\"]",
+      "→    ./kushagra/core.py:  passion += [\"interpretability\", \"building\"]",
+      "→    ./kushagra/README:   See passion for primary motivation.",
+    ]
+  },
+
+  status: {
+    description: " -- availability & focus",
+    pace: "measured",
+    run: async () => {
+      const block = document.createElement("div");
+      block.className = "output-block";
+      terminal.output.append(block);
+
+      const rows = [
+        { dot: "●", dotColor: "#6db87a", label: "availability", val: "open to internships  /  research collaborations" },
+        { dot: "●", dotColor: "#6db87a", label: "location", val: "MIT Manipal, India  ·  remote-first" },
+        { dot: "○", dotColor: "var(--dim)", label: "building", val: "ml systems  ·  nlp pipelines" },
+        { dot: "○", dotColor: "var(--dim)", label: "studying", val: "mechanistic interpretability  ·  physics" },
+        { dot: "○", dotColor: "var(--dim)", label: "target", val: "SWE / ML / research internship  2025-26" },
+      ];
+
+      for (const r of rows) {
+        const row = document.createElement("div");
+        row.className = "output-line";
+        row.style.display = "flex";
+        row.style.gap = "12px";
+
+        const dot = document.createElement("span");
+        dot.textContent = r.dot;
+        dot.style.color = r.dotColor;
+        dot.style.flexShrink = "0";
+
+        const label = document.createElement("span");
+        label.style.color = "var(--dim)";
+        label.style.minWidth = "120px";
+        label.textContent = r.label;
+
+        const val = document.createElement("span");
+        val.style.color = "var(--muted)";
+        val.textContent = r.val;
+
+        row.append(dot, label, val);
+        block.append(row);
+        scrollToBottom();
+        await wait(outputDelay(0, r.val, "measured"));
+      }
+
+      return [];
+    }
+  },
+
+  curl: {
+    hidden: true,
+    pace: "quick",
+    run: async () => {
+      const json = {
+        name: "Kushagra Sharan",
+        role: "Data Science & Engineering",
+        institution: "MIT Manipal",
+        graduation: 2028,
+        stack: ["Python", "ML", "NLP", "SQL", "Java"],
+        experience: ["Ernst & Young — AI Intern", "Graceland AM — Data Analyst"],
+        awards: ["NASA SSDC Dick Edwards Award", "AIR 1 GTSE English"],
+        available: true,
+        contact: "kushagrasharan2006@gmail.com"
+      };
+      const lines = JSON.stringify(json, null, 2).split("\n");
+      return [`$ curl -s https://kushagrasharan.me/api/v1/candidate`, ...lines];
+    }
+  },
+
+  find: {
+    hidden: true,
+    pace: "measured",
+    run: () => [
+      "$ find . -type f -name \"*.talent\"",
+      "",
+      "./kushagra/nlp_pipeline.talent",
+      "./kushagra/ml_systems.talent",
+      "./kushagra/team_lead.talent",
+      "./kushagra/resume.pdf  →  type: resume",
+      "",
+      "4 files found."
+    ]
   }
 };
 
@@ -697,11 +1033,11 @@ function currentNow() {
 
 async function runNow() {
   const timeStudy = {
-    night:   "studying: failure modes / safety",
-    morning: "studying: systems before scale",
-    day:     "studying: interpretability / safety",
-    evening: "studying: abstractions under constraint",
-    late:    "studying: compression / uncertainty"
+    night:   "studying: ai alignment / mechanistic interpretability",
+    morning: "studying: physics",
+    day:     "studying: coursework, probably",
+    evening: "studying: not right now. at the gym.",
+    late:    "studying: at this hour? "
   };
 
   const block = document.createElement("div");
@@ -711,7 +1047,7 @@ async function runNow() {
   const lines = [
     { text: "building: ml systems", pulse: true },
     { text: timeStudy[timeBand()], pulse: false },
-    { text: "thinking: physics as compression", pulse: false }
+    { text: "thinking: how did we get here?", pulse: false }
   ];
 
   for (const item of lines) {
@@ -801,41 +1137,184 @@ async function runCommandChain(commandText) {
   }
 }
 
+async function runGitLog() {
+  const commits = [
+    { hash: "a9f3d12", refs: "(HEAD → main)", date: "Apr 2025",  msg: "feat: ai internship at ernst & young, gurugram" },
+    { hash: "7c2e891", refs: "",              date: "Apr 2025",  msg: "build: semantic GST schema standardization engine" },
+    { hash: "3b8f044", refs: "",              date: "Mar 2025",  msg: "perf: +8.1% cosine similarity, 35% faster inference" },
+    { hash: "f1d9a57", refs: "",              date: "Jan 2025",  msg: "init: semester 3 — DBMS, OS, ML, OOP" },
+    { hash: "22c7b3e", refs: "",              date: "Aug 2024",  msg: "feat: data analyst intern at graceland asset mgmt" },
+    { hash: "9e4a188", refs: "",              date: "Jul 2024",  msg: "init: b.tech data science & engineering, mit manipal" },
+    { hash: "d04f9c1", refs: "",              date: "Mar 2023",  msg: "award: nasa ssdc — dick edwards exceptional leadership" },
+    { hash: "88b2e73", refs: "",              date: "2023",      msg: "lead: 50+ person international team, nasa ssdc" },
+    { hash: "c1a0044", refs: "",              date: "2022",      msg: "init: national winner, asian regional runner-up" },
+  ];
+
+  const block = document.createElement("div");
+  block.className = "output-block";
+  terminal.output.append(block);
+
+  for (const c of commits) {
+    const row = document.createElement("div");
+    row.className = "output-line";
+    row.style.whiteSpace = "pre";
+
+    const hash = document.createElement("span");
+    hash.className = "gitlog-hash";
+    hash.textContent = c.hash + " ";
+
+    const ref = document.createElement("span");
+    ref.className = "gitlog-ref";
+    ref.textContent = c.refs ? c.refs + " " : "";
+
+    const msg = document.createElement("span");
+    msg.className = "gitlog-msg";
+    msg.textContent = c.msg;
+
+    const date = document.createElement("span");
+    date.className = "gitlog-date";
+    date.textContent = "  " + c.date;
+
+    row.append(hash, ref, msg, date);
+    block.append(row);
+    scrollToBottom();
+    await wait(80);
+  }
+}
+
+function extractAiReply(data) {
+  if (!data || typeof data !== "object") return "";
+  const s = data.response ?? data.reply ?? data.text ?? data.message ?? data.output;
+  return typeof s === "string" ? s : "";
+}
+
 async function executeCommand(command) {
   const count = recordCommand(command);
   const entry = COMMANDS[command];
 
+  // Phrase commands (multi-word)
+  if (command === "git log" || command === "git log --oneline") {
+    await runGitLog();
+    return;
+  }
+  if (command === "git status") {
+    await printLines([
+      "On branch main",
+      "Your branch is up to date with 'origin/main'.",
+      "",
+      "nothing to commit, everything pushed.",
+      "  (career is clean and deployable)"
+    ], { pace: "quick" });
+    return;
+  }
+  if (command.startsWith("cat ")) {
+    await printLines([
+      `cat: ${command.slice(4)}: this is a terminal, not a filesystem.`,
+      "try: about"
+    ], "error");
+    return;
+  }
+  if (command.startsWith("cd ")) {
+    await printLines(["you're already here."], { pace: "quick" });
+    return;
+  }
+  if (command === "pwd") {
+    await printLines(["/home/kushagra/portfolio"], { pace: "quick" });
+    return;
+  }
+  if (command === "whoami") {
+    await printLines(["kushagra sharan. builder of things that probably work."], { pace: "quick" });
+    return;
+  }
+  if (command === "date") {
+    await printLines([new Date().toLocaleString("en-IN", { timeZone: "Asia/Kolkata" }) + " IST"], { pace: "quick" });
+    return;
+  }
+
   if (!entry) {
     const isSpecialCase = command.includes("&&");
     const nearest = nearestCommand(command);
-    
+
     if (isSpecialCase || (!command.includes(" ") && nearest.distance <= 2) || command.trim().length <= 2) {
       await printLines(invalidResponse(command), "error");
       return;
     }
 
-    await printLines([`processing...`], { className: "idle-line", pace: "quick" });
+    const thinkingBlock = document.createElement("div");
+    thinkingBlock.className = "output-block";
+    const thinkingRow = document.createElement("div");
+    thinkingRow.className = "output-line boot-connecting";
+    thinkingRow.textContent = "processing";
+    thinkingBlock.append(thinkingRow);
+    terminal.output.append(thinkingBlock);
+    scrollToBottom();
+
+    let dotCount = 0;
+    let dotInterval = window.setInterval(() => {
+      dotCount = (dotCount + 1) % 4;
+      thinkingRow.textContent = "processing" + ".".repeat(dotCount);
+    }, 300);
+
+    let thinkingDone = false;
+    const stopThinking = () => {
+      if (thinkingDone) return;
+      thinkingDone = true;
+      window.clearInterval(dotInterval);
+      dotInterval = null;
+      thinkingBlock.remove();
+    };
 
     try {
       const workerUrl = "https://kushagra-terminal-ai.kushagrasharan2006.workers.dev";
-      
+
       const response = await fetch(workerUrl, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ command }),
       });
-      
-      if (!response.ok) throw new Error("API Network Error");
-      
-      const data = await response.json();
+
+      const raw = (await response.text()).trim();
+
+      stopThinking();
+
+      let data = null;
+      if (raw && raw[0] === "{") {
+        try {
+          data = JSON.parse(raw);
+        } catch {
+          data = null;
+        }
+      }
+
+      const looksLikeHtml = raw.startsWith("<!") || raw.startsWith("<html");
+      if (!response.ok || looksLikeHtml || raw === "") {
+        await printLines([
+          looksLikeHtml || response.status >= 400
+            ? `ai gateway returned HTML or non-JSON (HTTP ${response.status}). The worker may sit behind Cloudflare Access — expose POST / anonymously or whitelist this origin.`
+            : "ai gateway responded with empty or invalid body.",
+          "surface unchanged.",
+        ], "error");
+        return;
+      }
+
+      if (!data) {
+        await printLines(["ai gateway returned malformed JSON.", "surface unchanged."], "error");
+        return;
+      }
+
       if (data.error) throw new Error(data.error);
 
-      const aiLines = data.response.split("\n").map(l => l.trim()).filter(Boolean);
+      const replyText = extractAiReply(data);
+      let aiLines = replyText.split("\n").map((l) => l.trim()).filter(Boolean);
+
+      if (!aiLines.length) aiLines = [replyText.trim() || "(empty response)"];
+
       await printLines(aiLines, { className: "ai-response", pace: "measured" });
     } catch (e) {
+      stopThinking();
       await printLines(invalidResponse(command), "error");
     }
-    
+
     return;
   }
 
@@ -939,12 +1418,47 @@ function pushHistory(command) {
   }
 
   terminal.historyIndex = terminal.history.length;
+  try {
+    localStorage.setItem("ksh_history", JSON.stringify(terminal.history.slice(-40)));
+  } catch {
+    /* noop */
+  }
 }
 
 function syncInput() {
   terminal.mirror.textContent = terminal.input.value;
   markCursorActive();
   markActivity();
+}
+
+function updateGhostCompletion() {
+  const partial = terminal.input.value.trim().toLowerCase();
+  let existing = terminal.form.querySelector(".autocomplete-ghost");
+
+  if (!partial) {
+    if (existing) existing.remove();
+    terminal.ghostNode = null;
+    return;
+  }
+
+  const match = Object.keys(COMMANDS).find(name =>
+    name.startsWith(partial) && !COMMANDS[name].hidden && name !== partial
+  );
+
+  if (!match) {
+    if (existing) existing.remove();
+    terminal.ghostNode = null;
+    return;
+  }
+
+  if (!existing) {
+    existing = document.createElement("span");
+    existing.className = "autocomplete-ghost";
+    terminal.mirror.parentElement.insertBefore(existing, terminal.mirror.nextSibling);
+    terminal.ghostNode = existing;
+  }
+
+  existing.textContent = match.slice(partial.length);
 }
 
 function placeCaretAtEnd() {
@@ -1031,16 +1545,27 @@ terminal.form.addEventListener("submit", (event) => {
   if (navigator.vibrate) navigator.vibrate(15);
   
   syncInput();
+  updateGhostCompletion();
   runCommand(command);
 });
 
 terminal.input.addEventListener("input", () => {
-    syncInput();
+  syncInput();
+  updateGhostCompletion();
 });
 terminal.input.addEventListener("focus", placeCaretAtEnd);
 terminal.input.addEventListener("click", placeCaretAtEnd);
 
 terminal.input.addEventListener("keydown", (event) => {
+  if (shortcutOverlay) {
+    if (event.key === "?" && !terminal.input.value) {
+      event.preventDefault();
+      shortcutOverlay.classList.toggle("is-visible");
+      return;
+    }
+    if (event.key === "Escape") shortcutOverlay.classList.remove("is-visible");
+  }
+
   playKeyClick();
   markCursorActive();
 
@@ -1054,6 +1579,18 @@ terminal.input.addEventListener("keydown", (event) => {
     if (match) {
       terminal.input.value = match;
       syncInput();
+      updateGhostCompletion();
+      placeCaretAtEnd();
+    }
+  }
+
+  if (event.key === "ArrowRight" && terminal.ghostNode && terminal.input.selectionStart === terminal.input.value.length) {
+    const partial = terminal.input.value.trim().toLowerCase();
+    const match = Object.keys(COMMANDS).find(name => name.startsWith(partial) && !COMMANDS[name].hidden);
+    if (match) {
+      terminal.input.value = match;
+      syncInput();
+      updateGhostCompletion();
       placeCaretAtEnd();
     }
   }
@@ -1250,7 +1787,32 @@ async function boot() {
   terminal.input.focus();
   syncInput();
 
-  // ASCII name banner — draws in letter by letter
+  // Phase 1: connection handshake — typewriter, before banner
+  const handshake = [
+    { text: "initializing node...", delay: 0 },
+    { text: "establishing connection → kushagrasharan.me", delay: 340 },
+    { text: "connection established.  [ OK ]", delay: 420, accent: true },
+  ];
+
+  const handshakeBlock = document.createElement("div");
+  handshakeBlock.className = "output-block";
+  terminal.output.append(handshakeBlock);
+
+  for (const line of handshake) {
+    await wait(line.delay);
+    const row = document.createElement("div");
+    row.className = "output-line" + (line.accent ? " boot-ok" : " boot-connecting");
+    handshakeBlock.append(row);
+    scrollToBottom();
+    for (const char of line.text) {
+      row.textContent += char;
+      await wait(18 + Math.random() * 10);
+    }
+  }
+
+  await wait(220);
+
+  // Phase 2: ASCII banner (existing logic — keep as-is)
   const banner = [
     "██╗  ██╗██╗   ██╗███████╗██╗  ██╗ █████╗  ██████╗ ██████╗  █████╗ ",
     "██║ ██╔╝██║   ██║██╔════╝██║  ██║██╔══██╗██╔════╝ ██╔══██╗██╔══██╗",
@@ -1274,15 +1836,41 @@ async function boot() {
   }
 
   await wait(180);
-
-  // Tagline types in character by character
   await typewriterLine("data science & engineering. nlp. ml systems.", "banner-sub");
-  await wait(120);
-  await typewriterLine("type help", "banner-hint");
+  await wait(60);
+
+  // Phase 3: available status badge
+  const statusRow = document.createElement("div");
+  statusRow.className = "output-line boot-status";
+  statusRow.innerHTML = '<span class="status-dot"></span> open to opportunities &nbsp;·&nbsp; <span style="color:var(--dim)">type <span style="color:var(--accent)">help</span> or <span style="color:var(--accent)">neofetch</span></span>';
+  const statusBlock = document.createElement("div");
+  statusBlock.className = "output-block";
+  statusBlock.append(statusRow);
+  terminal.output.append(statusBlock);
+  scrollToBottom();
+
   await wait(80);
 
   const initialCommand = commandFromHash();
   if (initialCommand) await runCommand(initialCommand);
+}
+
+// Mobile quick-command buttons
+document.querySelectorAll(".mobile-cmd-btn").forEach(btn => {
+  btn.addEventListener("click", () => {
+    const cmd = btn.dataset.cmd;
+    if (cmd && !terminal.busy) {
+      terminal.input.value = "";
+      syncInput();
+      runCommand(cmd);
+    }
+  });
+});
+
+if (shortcutOverlay) {
+  shortcutOverlay.addEventListener("click", (e) => {
+    if (e.target === shortcutOverlay) shortcutOverlay.classList.remove("is-visible");
+  });
 }
 
 boot();

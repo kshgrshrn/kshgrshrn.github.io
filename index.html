@@ -16,6 +16,7 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
+  <div class="focus-pass-overlay" aria-hidden="true"></div>
   <main class="terminal" aria-label="Kushagra Sharan terminal">
     <div id="terminal-output" class="terminal-output" aria-live="polite"></div>
 
@@ -38,6 +39,27 @@
       </span>
     </form>
   </main>
+
+  <nav class="mobile-cmds" aria-label="Quick commands">
+    <button class="mobile-cmd-btn" data-cmd="about">about</button>
+    <button class="mobile-cmd-btn" data-cmd="experience">exp</button>
+    <button class="mobile-cmd-btn" data-cmd="projects">projects</button>
+    <button class="mobile-cmd-btn" data-cmd="neofetch">neofetch</button>
+    <button class="mobile-cmd-btn" data-cmd="contact">contact</button>
+  </nav>
+
+  <div id="shortcut-overlay" class="shortcut-overlay" role="dialog" aria-label="Keyboard shortcuts">
+    <div class="shortcut-box">
+      <div class="shortcut-title">keyboard shortcuts</div>
+      <div class="shortcut-row"><span class="shortcut-key">Tab</span><span class="shortcut-desc">autocomplete command</span></div>
+      <div class="shortcut-row"><span class="shortcut-key">→</span><span class="shortcut-desc">accept ghost suggestion</span></div>
+      <div class="shortcut-row"><span class="shortcut-key">↑ ↓</span><span class="shortcut-desc">command history</span></div>
+      <div class="shortcut-row"><span class="shortcut-key">Ctrl+L</span><span class="shortcut-desc">clear screen</span></div>
+      <div class="shortcut-row"><span class="shortcut-key">&&</span><span class="shortcut-desc">chain commands</span></div>
+      <div class="shortcut-row"><span class="shortcut-key">?</span><span class="shortcut-desc">toggle this overlay</span></div>
+      <div class="shortcut-close-hint">press ? or Esc to close</div>
+    </div>
+  </div>
 
   <div id="system-cursor" class="system-cursor" aria-hidden="true"></div>
 

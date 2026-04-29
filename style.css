@@ -57,6 +57,25 @@ body::before {
   content: "";
   position: fixed;
   inset: 0;
+  z-index: 9;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+  opacity: 0.028;
+  background-size: 160px 160px;
+}
+
+html::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 8;
+  pointer-events: none;
+  background: radial-gradient(ellipse at center, transparent 55%, rgba(0,0,0,0.38) 100%);
+}
+
+.focus-pass-overlay {
+  position: fixed;
+  inset: 0;
   z-index: 10;
   pointer-events: none;
   opacity: 0;
@@ -66,7 +85,7 @@ body::before {
   transform: translateY(-10vh);
 }
 
-body.is-focusing::before {
+body.is-focusing .focus-pass-overlay {
   animation: focus-pass 240ms cubic-bezier(0.42, 0, 0.18, 1) both;
 }
 
@@ -240,6 +259,16 @@ body.theme-blue {
   --selection: rgba(138, 180, 212, 0.2);
 }
 
+body.theme-rose {
+  --text: #d4a0b0;
+  --muted: #8a5c6a;
+  --dim: #4a2a35;
+  --prompt: #c48090;
+  --accent: #d4a0b0;
+  --error: #bc7070;
+  --selection: rgba(212, 160, 176, 0.2);
+}
+
 .terminal-output {
   flex: 1 1 auto;
   min-height: 0;
@@ -256,6 +285,18 @@ body.theme-blue {
 .terminal-output::-webkit-scrollbar {
   width: 0;
   height: 0;
+}
+
+.terminal-output::after {
+  content: "";
+  position: sticky;
+  bottom: 0;
+  left: 0;
+  display: block;
+  height: 36px;
+  margin-top: -36px;
+  background: linear-gradient(to bottom, transparent, var(--bg));
+  pointer-events: none;
 }
 
 .terminal-output.is-clearing {
@@ -374,6 +415,19 @@ body.theme-blue {
   display: inline-flex;
   align-items: baseline;
   line-height: inherit;
+}
+
+.autocomplete-ghost {
+  position: absolute;
+  left: 0;
+  top: 0;
+  color: var(--dim);
+  opacity: 0.5;
+  pointer-events: none;
+  white-space: pre;
+  font: inherit;
+  letter-spacing: inherit;
+  user-select: none;
 }
 
 .terminal-input {
@@ -561,6 +615,27 @@ body.is-idle .cursor {
   letter-spacing: 0.04em;
   opacity: 0;
   animation: line-in 80ms ease forwards;
+  text-shadow: 0 0 18px rgba(182, 192, 180, 0.18);
+}
+
+.banner-clone {
+  position: fixed;
+  top: clamp(18px, 4vw, 34px);
+  right: clamp(18px, 4vw, 34px);
+  z-index: 11;
+  margin: 0;
+  padding: 0;
+  pointer-events: none;
+  text-align: right;
+  transform-origin: center;
+  animation: banner-spin 24s linear infinite;
+  opacity: 0.72;
+  display: none;
+}
+
+@keyframes banner-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
 }
 
 .banner-sub {
@@ -717,4 +792,283 @@ body.is-glitching .terminal-output {
     font-size: 0.28rem;
     letter-spacing: 0.02em;
   }
+
+  .banner-clone {
+    display: none;
+  }
+}
+
+@media (min-width: 621px) {
+  .banner-clone {
+    display: block;
+  }
+}
+
+/* ── Boot handshake lines ──────────────────────── */
+.boot-connecting {
+  color: var(--dim);
+}
+
+.boot-ok {
+  color: var(--accent);
+}
+
+/* ── Availability status badge ─────────────────── */
+.boot-status {
+  color: var(--muted);
+  margin-top: 6px;
+}
+
+.status-dot {
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #6db87a;
+  box-shadow: 0 0 6px rgba(109, 184, 122, 0.5);
+  margin-right: 6px;
+  animation: status-pulse 2.4s ease-in-out infinite;
+  vertical-align: middle;
+  position: relative;
+  top: -1px;
+}
+
+@keyframes status-pulse {
+  0%, 100% { opacity: 1; box-shadow: 0 0 6px rgba(109, 184, 122, 0.5); }
+  50% { opacity: 0.6; box-shadow: 0 0 3px rgba(109, 184, 122, 0.2); }
+}
+
+/* ── Moving CRT scanline ───────────────────────── */
+.terminal::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(to bottom,
+    transparent,
+    rgba(216, 221, 216, 0.028) 50%,
+    transparent
+  );
+  pointer-events: none;
+  z-index: 20;
+  animation: scanline 9s linear infinite;
+  will-change: transform;
+}
+
+@keyframes scanline {
+  0% { transform: translateY(-100vh); }
+  100% { transform: translateY(100vh); }
+}
+
+/* ── neofetch layout ───────────────────────────── */
+.neofetch-wrap {
+  display: flex;
+  gap: 28px;
+  align-items: flex-start;
+}
+
+.neofetch-art {
+  flex: 0 0 auto;
+  color: var(--accent);
+  line-height: 1.4;
+  white-space: pre;
+  font-size: clamp(0.72rem, 1.2vw, 0.84rem);
+  text-shadow: 0 0 14px rgba(182, 192, 180, 0.2);
+}
+
+.neofetch-info {
+  flex: 1 1 auto;
+}
+
+.neofetch-name {
+  color: var(--text);
+  font-size: 0.96rem;
+  margin-bottom: 2px;
+}
+
+.neofetch-sep {
+  color: var(--dim);
+  margin-bottom: 8px;
+}
+
+.neofetch-row {
+  display: flex;
+  gap: 0;
+  min-height: 1.7em;
+}
+
+.neofetch-key {
+  color: var(--accent);
+  min-width: 120px;
+  flex: 0 0 auto;
+}
+
+.neofetch-val {
+  color: var(--muted);
+}
+
+.neofetch-colors {
+  display: flex;
+  gap: 4px;
+  margin-top: 10px;
+}
+
+.neofetch-swatch {
+  width: 14px;
+  height: 14px;
+  border-radius: 2px;
+}
+
+/* ── git log career ────────────────────────────── */
+.gitlog-hash {
+  color: #c4956a;
+}
+
+.gitlog-ref {
+  color: var(--accent);
+}
+
+.gitlog-msg {
+  color: var(--muted);
+}
+
+.gitlog-date {
+  color: var(--dim);
+  font-size: 0.82rem;
+}
+
+/* ── Mobile quick-command bar ──────────────────── */
+.mobile-cmds {
+  display: none;
+}
+
+@media (max-width: 720px) {
+  .mobile-cmds {
+    display: flex;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    background: rgba(12, 14, 15, 0.94);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-top: 1px solid rgba(216, 221, 216, 0.07);
+    padding: 10px 14px 18px;
+    gap: 8px;
+    justify-content: space-between;
+  }
+
+  .mobile-cmd-btn {
+    flex: 1;
+    background: rgba(216, 221, 216, 0.05);
+    border: 1px solid rgba(216, 221, 216, 0.1);
+    border-radius: 6px;
+    color: var(--muted);
+    font-family: var(--font);
+    font-size: 0.72rem;
+    padding: 8px 4px;
+    text-align: center;
+    cursor: pointer;
+    transition: background 120ms ease, color 120ms ease;
+    -webkit-tap-highlight-color: transparent;
+    letter-spacing: 0.02em;
+  }
+
+  .mobile-cmd-btn:active {
+    background: rgba(216, 221, 216, 0.12);
+    color: var(--text);
+  }
+
+  /* Push terminal input row above the bar */
+  .terminal {
+    padding-bottom: 84px;
+  }
+}
+
+/* ── ? shortcut overlay ────────────────────────── */
+.shortcut-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(12, 14, 15, 0.86);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 180ms ease;
+}
+
+.shortcut-overlay.is-visible {
+  opacity: 1;
+  pointer-events: all;
+}
+
+.shortcut-box {
+  border: 1px solid rgba(216, 221, 216, 0.12);
+  border-radius: 8px;
+  padding: 28px 36px;
+  max-width: 480px;
+  width: 90vw;
+  background: rgba(16, 18, 20, 0.96);
+}
+
+.shortcut-title {
+  color: var(--accent);
+  font-size: 0.82rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 16px;
+}
+
+.shortcut-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 5px 0;
+  border-bottom: 1px solid rgba(216, 221, 216, 0.04);
+}
+
+.shortcut-key {
+  color: var(--text);
+  font-size: 0.84rem;
+  background: rgba(216, 221, 216, 0.08);
+  border-radius: 3px;
+  padding: 1px 6px;
+  letter-spacing: 0.04em;
+}
+
+.shortcut-desc {
+  color: var(--muted);
+  font-size: 0.84rem;
+}
+
+.shortcut-close-hint {
+  color: var(--dim);
+  font-size: 0.78rem;
+  margin-top: 16px;
+  text-align: center;
+}
+
+/* ── man page style ────────────────────────────── */
+.man-section {
+  color: var(--text);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  font-size: 0.78rem;
+  margin-top: 10px;
+}
+
+.man-body {
+  color: var(--muted);
+  padding-left: 16px;
+  white-space: pre-wrap;
+}
+
+.man-bold {
+  color: var(--text);
+  font-weight: 500;
 }
