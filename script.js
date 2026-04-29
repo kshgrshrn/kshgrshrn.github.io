@@ -366,7 +366,7 @@ async function executeCommand(command) {
     await printLines([`analyzing input anomalous signature...`], { className: "idle-line", pace: "quick" });
 
     try {
-      const workerUrl = "https://kushagra-terminal-ai.kushagrasharan2006.workers.dev";
+      const workerUrl = "kushagra-terminal-ai.kushagrasharan2006.workers.dev";
       
       const response = await fetch(workerUrl, {
         method: "POST",
