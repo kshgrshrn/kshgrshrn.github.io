@@ -355,10 +355,12 @@ async function executeCommand(command) {
   const entry = COMMANDS[command];
 
   if (!entry) {
-    const isSpecialCase = command.includes(" ") || command.includes("&&") || command.length <= 2;
+    const isSpecialCase = command.includes("&&");
     const nearest = nearestCommand(command);
     
-    if (isSpecialCase || nearest.distance <= 2) {
+    // If it has spaces, it's likely a sentence for the LLM. 
+    // Otherwise, check if it's just a typo of a known command.
+    if (isSpecialCase || (!command.includes(" ") && nearest.distance <= 2) || command.trim().length <= 2) {
       await printLines(invalidResponse(command), "error");
       return;
     }
