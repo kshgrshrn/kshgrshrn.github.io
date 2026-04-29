@@ -1,83 +1,95 @@
+const PROMPT = "kushagra@node:~ $";
+
+const PROJECTS = [
+  {
+    name: "semantic-gst-schema-standardization-engine",
+    summary: "embedding-based tax schema mapping system",
+    href: "https://github.com/kshgrshrn/Semantic-GST-Schema-Standardization-Engine"
+  }
+];
+
 const CONTENT = {
   intro: [
-    "personal system interface",
-    "type 'help' for commands"
-  ],
-  help: [
-    "help      list commands",
-    "about     identity and current direction",
-    "projects  selected work",
-    "writing   published notes",
-    "now       current status",
-    "contact   links",
-    "clear     reset terminal"
+    "Kushagra Sharan",
+    "type 'help'"
   ],
   about: [
-    "Kushagra Sharan. B.Tech Data Science & Engineering, MIT Manipal. Graduating 2028.",
-    "Working around NLP systems, financial ML, interpretability research, and physics."
-  ],
-  projects: [
-    "<strong>Semantic GST Schema Standardization Engine</strong> - 2024, EY internship.",
-    "NLP pipeline mapping inconsistent tax headers to a unified 61-field GST schema. <a href=\"https://github.com/kshgrshrn/Semantic-GST-Schema-Standardization-Engine\" target=\"_blank\" rel=\"noreferrer\">github</a>"
+    "B.Tech Data Science & Engineering, MIT Manipal. Graduating 2028.",
+    "NLP systems, financial ML, interpretability research, physics."
   ],
   writing: [
-    "Nothing published yet."
+    "No published writing."
   ],
   now: [
     "No current update provided.",
     "Last local note: April 2025."
   ],
-  contact: [
-    "<a href=\"mailto:kushagrasharan2006@gmail.com\">kushagrasharan2006@gmail.com</a>",
-    "<a href=\"https://github.com/kshgrshrn\" target=\"_blank\" rel=\"noreferrer\">github.com/kshgrshrn</a> / <a href=\"https://linkedin.com/in/kushagrasharan\" target=\"_blank\" rel=\"noreferrer\">linkedin.com/in/kushagrasharan</a>"
+  links: [
+    `<a href="https://github.com/kshgrshrn" target="_blank" rel="noreferrer">github.com/kshgrshrn</a>`,
+    `<a href="https://www.linkedin.com/in/kushagrasharan/" target="_blank" rel="noreferrer">linkedin.com/in/kushagrasharan</a>`
   ]
 };
 
-const output = document.querySelector("#terminal-output");
-const form = document.querySelector("#terminal-form");
-const input = document.querySelector("#terminal-input");
-const statusNode = document.querySelector(".node-status");
-const promptText = "ks@node:~$";
-
-const state = {
+const terminal = {
+  output: document.querySelector("#terminal-output"),
+  form: document.querySelector("#terminal-form"),
+  input: document.querySelector("#terminal-input"),
+  mirror: document.querySelector("#input-mirror"),
   history: [],
-  historyIndex: -1,
-  printing: false
+  historyIndex: 0,
+  busy: false
 };
+
+let cursorActivityTimer;
 
 const COMMANDS = {
   help: {
     description: "list commands",
-    run: () => CONTENT.help
+    run: () => commandList()
   },
   about: {
-    description: "identity and current direction",
-    run: () => CONTENT.about
+    description: "identity",
+    run: () => [...CONTENT.about, "", ...CONTENT.links]
   },
   projects: {
     description: "selected work",
-    run: () => CONTENT.projects
+    run: () => projectList()
   },
   writing: {
     description: "published notes",
     run: () => CONTENT.writing
   },
   now: {
-    description: "current status",
+    description: "current state",
     run: () => CONTENT.now
   },
-  contact: {
-    description: "links",
-    run: () => CONTENT.contact
+  links: {
+    description: "external links",
+    run: () => CONTENT.links
   },
   clear: {
-    description: "reset terminal",
+    description: "clear terminal",
     run: () => {
-      output.replaceChildren();
+      terminal.output.replaceChildren();
       return [];
     }
   }
 };
+
+function commandList() {
+  return Object.entries(COMMANDS).map(([name, command]) => {
+    return `${name.padEnd(9, " ")}${command.description}`;
+  });
+}
+
+function projectList() {
+  if (!PROJECTS.length) return ["No projects listed."];
+
+  return PROJECTS.flatMap((project) => [
+    `<strong>${project.name}</strong> - ${project.summary}`,
+    `  <a href="${project.href}" target="_blank" rel="noreferrer">view &rarr;</a>`
+  ]);
+}
 
 function appendCommand(command) {
   const row = document.createElement("div");
@@ -85,63 +97,93 @@ function appendCommand(command) {
 
   const prompt = document.createElement("span");
   prompt.className = "prompt";
-  prompt.textContent = promptText;
+  prompt.textContent = PROMPT;
 
-  const commandText = document.createElement("span");
-  commandText.className = "command-text";
-  commandText.textContent = command;
+  const text = document.createElement("span");
+  text.className = "command-text";
+  text.textContent = command;
 
-  row.append(prompt, commandText);
-  output.append(row);
+  row.append(prompt, text);
+  terminal.output.append(row);
 }
 
 function appendOutputLine(line, className = "") {
   const row = document.createElement("div");
-  row.className = `output-line ${className}`.trim();
-  row.innerHTML = line;
+  row.className = ["output-line", className].filter(Boolean).join(" ");
+  row.innerHTML = line || "&nbsp;";
   return row;
 }
 
-async function printLines(lines, options = {}) {
+async function printLines(lines, className = "") {
   const block = document.createElement("div");
   block.className = "output-block";
-  output.append(block);
+  terminal.output.append(block);
 
   for (const line of lines) {
-    block.append(appendOutputLine(line, options.className));
+    block.append(appendOutputLine(line, className));
     scrollToBottom();
-    await wait(options.delay ?? 42);
+    await wait(46);
   }
 }
 
-async function runCommand(rawCommand, echo = true) {
+async function runCommand(rawCommand, options = {}) {
   const command = rawCommand.trim().toLowerCase();
-  if (!command || state.printing) return;
+  if (!command || terminal.busy) return;
 
-  state.printing = true;
-  input.disabled = true;
+  terminal.busy = true;
 
-  if (echo) appendCommand(command);
-
-  if (!state.history.includes(command)) {
-    state.history.push(command);
-  } else if (state.history[state.history.length - 1] !== command) {
-    state.history.push(command);
-  }
-  state.historyIndex = state.history.length;
+  if (options.echo !== false) appendCommand(command);
+  pushHistory(command);
 
   const entry = COMMANDS[command];
   if (!entry) {
-    await printLines([`command not found: ${escapeHtml(command)}`, "type 'help'"], { className: "error" });
+    await printLines([`command not found: ${escapeHtml(command)}`, "type 'help'"], "error");
   } else {
     const lines = entry.run();
     if (lines.length) await printLines(lines);
   }
 
-  input.disabled = false;
-  input.focus();
-  state.printing = false;
+  terminal.busy = false;
+  terminal.input.focus();
   scrollToBottom();
+}
+
+function pushHistory(command) {
+  if (terminal.history.at(-1) !== command) {
+    terminal.history.push(command);
+  }
+  terminal.historyIndex = terminal.history.length;
+}
+
+function syncInput() {
+  terminal.mirror.textContent = terminal.input.value;
+  markCursorActive();
+}
+
+function placeCaretAtEnd() {
+  const end = terminal.input.value.length;
+  terminal.input.setSelectionRange(end, end);
+}
+
+function markCursorActive() {
+  terminal.form.classList.add("is-active");
+  window.clearTimeout(cursorActivityTimer);
+  cursorActivityTimer = window.setTimeout(() => {
+    terminal.form.classList.remove("is-active");
+  }, 520);
+}
+
+function recallHistory(direction) {
+  if (!terminal.history.length) return;
+
+  terminal.historyIndex = Math.min(
+    terminal.history.length,
+    Math.max(0, terminal.historyIndex + direction)
+  );
+
+  terminal.input.value = terminal.history[terminal.historyIndex] || "";
+  syncInput();
+  placeCaretAtEnd();
 }
 
 function wait(ms) {
@@ -150,7 +192,7 @@ function wait(ms) {
 
 function scrollToBottom() {
   window.requestAnimationFrame(() => {
-    document.documentElement.scrollTop = document.documentElement.scrollHeight;
+    terminal.output.scrollIntoView({ block: "end" });
   });
 }
 
@@ -161,59 +203,70 @@ function escapeHtml(value) {
 }
 
 function commandFromHash() {
-  const value = window.location.hash.replace("#", "").trim().toLowerCase();
-  return COMMANDS[value] ? value : "";
+  const hash = window.location.hash.replace("#", "").trim().toLowerCase();
+  return COMMANDS[hash] ? hash : "";
 }
 
-form.addEventListener("submit", (event) => {
+terminal.form.addEventListener("submit", (event) => {
   event.preventDefault();
-  const command = input.value;
-  input.value = "";
+  const command = terminal.input.value;
+  terminal.input.value = "";
+  syncInput();
   runCommand(command);
 });
 
-input.addEventListener("keydown", (event) => {
-  if (!state.history.length) return;
+terminal.input.addEventListener("input", syncInput);
+
+terminal.input.addEventListener("focus", placeCaretAtEnd);
+
+terminal.input.addEventListener("click", placeCaretAtEnd);
+
+terminal.input.addEventListener("keydown", (event) => {
+  markCursorActive();
+
+  if (["ArrowLeft", "Home"].includes(event.key)) {
+    window.requestAnimationFrame(placeCaretAtEnd);
+  }
 
   if (event.key === "ArrowUp") {
     event.preventDefault();
-    state.historyIndex = Math.max(0, state.historyIndex - 1);
-    input.value = state.history[state.historyIndex] ?? "";
-    input.setSelectionRange(input.value.length, input.value.length);
+    recallHistory(-1);
   }
 
   if (event.key === "ArrowDown") {
     event.preventDefault();
-    state.historyIndex = Math.min(state.history.length, state.historyIndex + 1);
-    input.value = state.history[state.historyIndex] ?? "";
+    recallHistory(1);
   }
 });
 
-document.querySelectorAll("[data-command]").forEach((button) => {
-  button.addEventListener("click", () => {
-    input.value = "";
-    runCommand(button.dataset.command);
-  });
-});
-
 document.addEventListener("click", (event) => {
-  const isLink = event.target.closest("a");
-  const isButton = event.target.closest("button");
-  if (!isLink && !isButton) input.focus();
+  if (!event.target.closest("a")) terminal.input.focus();
 });
 
 function scheduleGlitch() {
-  const next = 4200 + Math.random() * 7600;
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+  const delay = 14000 + Math.random() * 22000;
   window.setTimeout(() => {
-    statusNode.classList.add("jolt");
-    window.setTimeout(() => statusNode.classList.remove("jolt"), 130);
+    const lines = [...document.querySelectorAll(".output-line")].filter((line) => {
+      return !line.querySelector("a");
+    });
+    const line = lines[Math.floor(Math.random() * lines.length)];
+
+    if (line) {
+      line.classList.add("glitch");
+      window.setTimeout(() => line.classList.remove("glitch"), 120);
+    }
+
     scheduleGlitch();
-  }, next);
+  }, delay);
 }
 
 async function boot() {
-  input.focus();
-  await printLines(CONTENT.intro, { delay: 65 });
+  terminal.input.focus();
+  syncInput();
+  await printLines(CONTENT.intro);
+
   const initialCommand = commandFromHash();
   if (initialCommand) await runCommand(initialCommand);
 }
