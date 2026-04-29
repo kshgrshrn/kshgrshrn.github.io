@@ -1,3 +1,7 @@
+const SESSION_START = Date.now();
+const THEMES = ["default", "amber", "blue"];
+let themeIndex = 0;
+
 const PROMPT = "kushagra@node:~ $";
 
 const PROJECTS = [
@@ -26,20 +30,24 @@ const CONTENT = {
     `github   -> <a href="https://github.com/kshgrshrn" target="_blank" rel="noreferrer">https://github.com/kshgrshrn</a>`,
     `linkedin -> <a href="https://www.linkedin.com/in/kushagrasharan/" target="_blank" rel="noreferrer">https://www.linkedin.com/in/kushagrasharan/</a>`
   ],
-  now: [
-    "building: scalable NLP pipelines & ML systems",
-    "studying: Data Science @ MIT Manipal",
-    "exploring: Interpretability & AI Safety alignment"
-  ],
   experience: [
-    "=== PROFESSIONAL EXPERIENCE ===",
+    "=== EXPERIENCE ===",
     "",
-    "Ernst & Young (EY) | Gurugram",
-    "Role: AI Intern",
-    "Contributions:",
-    " - Built an AI-powered NLP pipeline to standardize messy GST datasets.",
-    " - Implemented semantic embeddings to map raw data into a unified 61-field schema.",
-    " - Automated tax data ingestion across inconsistent inputs."
+    "Ernst & Young (EY)  |  AI Intern  |  Gurugram  |  Jul–Aug 2025",
+    " - semantic schema standardization engine using Sentence Transformers",
+    "   mapped inconsistent client GST headers to a 61-field unified schema",
+    "   replaced brittle hardcoded lookup dictionaries entirely",
+    " - fine-tuned all-MiniLM-L6-v2 on domain-specific GST header pairs",
+    "   +8.1% cosine similarity confidence over baseline",
+    "   35% faster inference per column",
+    " - automated invoice ingestion via REST APIs + Selenium",
+    "   built reconciliation dashboards (matplotlib, seaborn)",
+    "   surfaced mismatch trends for internal audit review",
+    "",
+    "Graceland Asset Management  |  Data Analyst Intern  |  Jun–Aug 2024",
+    " - cleaned multi-source real estate datasets using pandas",
+    "   exploratory analysis for internal benchmarking",
+    " - produced summary reports adopted for operational evaluation"
   ],
   writing: [
     "No published writing."
@@ -61,11 +69,13 @@ const CONTENT = {
     ]
   },
   aboutAfterRepeat: [
-    "Data Science & Engineering @ MIT Manipal.",
-    "Engineering & Data Science.",
+    "the longer answer:",
     "",
-    `github   -> <a href="https://github.com/kshgrshrn" target="_blank" rel="noreferrer">https://github.com/kshgrshrn</a>`,
-    `linkedin -> <a href="https://www.linkedin.com/in/kushagrasharan/" target="_blank" rel="noreferrer">https://www.linkedin.com/in/kushagrasharan/</a>`
+    "interested in the gap between ML research and production systems.",
+    "specifically: when embeddings lie, when pipelines silently fail,",
+    "and what interpretability can tell us about both.",
+    "",
+    "outside that: aviation, systems thinking, bad sci-fi."
   ]
 };
 
@@ -104,9 +114,11 @@ let cursorActivityTimer;
 
 const COMMANDS = {
   help: {
-    description: "commands",
+    description: "list",
     pace: "quick",
-    run: () => visibleCommands()
+    run: () => Object.entries(COMMANDS)
+      .filter(([, cmd]) => !cmd.hidden)
+      .map(([name, cmd]) => `${name.padEnd(14)}${cmd.description ?? ""}`)
   },
   sudo: {
     hidden: true,
@@ -141,7 +153,7 @@ const COMMANDS = {
     run: () => currentNow()
   },
   writing: {
-    description: "notes",
+    hidden: true,
     pace: "quick",
     run: () => CONTENT.writing
   },
@@ -149,6 +161,43 @@ const COMMANDS = {
     description: "external",
     pace: "quick",
     run: () => CONTENT.links
+  },
+  resume: {
+    description: "download",
+    pace: "quick",
+    run: () => [
+      `cv -> <a href="/resume.pdf" target="_blank" rel="noreferrer">kushagra_sharan_resume.pdf</a>`,
+      "opens in new tab."
+    ]
+  },
+  skills: {
+    description: "stack",
+    pace: "structured",
+    run: () => [
+      "languages     python, sql, java, c",
+      "ml / nlp      hugging face, sentence-transformers, scikit-learn",
+      "data          pandas, numpy, matplotlib, seaborn",
+      "infra         fastapi, selenium, rest apis, git, jupyter",
+      "domains       nlp, ml systems, financial data, workflow automation"
+    ]
+  },
+  awards: {
+    description: "recognition",
+    pace: "measured",
+    run: () => [
+      "Dick Edwards Exceptional Leadership Award",
+      "  NASA Space Settlement Design Competition",
+      "  top 0.5% global cohort — Titusville, FL  2022–23",
+      "",
+      "National Winner + Asian Regional Runner-Up",
+      "  NASA / Boeing orbital habitat proposal",
+      "  directed 50+ member international team",
+      "",
+      "Global Talent Search Examination",
+      "  All India Rank 1 — English",
+      "",
+      "Cambridge English First — CEFR C1, Grade A"
+    ]
   },
   clear: {
     description: "reset",
@@ -179,6 +228,43 @@ const COMMANDS = {
       "surface: command",
       "depth: interpretation"
     ]
+  },
+  whoami: {
+    hidden: true,
+    pace: "quick",
+    run: () => ["kushagra sharan. builder of things that probably work."]
+  },
+  history: {
+    hidden: true,
+    pace: "quick",
+    run: () => terminal.history.length
+      ? terminal.history.slice(-10).map((cmd, i) => `${String(i + 1).padStart(3)}  ${cmd}`)
+      : ["no commands in history."]
+  },
+  uptime: {
+    hidden: true,
+    pace: "quick",
+    run: () => {
+      const s = Math.floor((Date.now() - SESSION_START) / 1000);
+      const m = Math.floor(s / 60);
+      const h = Math.floor(m / 60);
+      const parts = [];
+      if (h) parts.push(`${h}h`);
+      if (m % 60) parts.push(`${m % 60}m`);
+      parts.push(`${s % 60}s`);
+      return [`session uptime: ${parts.join(" ")}`];
+    }
+  },
+  theme: {
+    hidden: true,
+    pace: "quick",
+    run: () => {
+      document.body.classList.remove(...THEMES.map(t => `theme-${t}`));
+      themeIndex = (themeIndex + 1) % THEMES.length;
+      const next = THEMES[themeIndex];
+      if (next !== "default") document.body.classList.add(`theme-${next}`);
+      return [`theme: ${next}`];
+    }
   }
 };
 
@@ -565,6 +651,20 @@ terminal.input.addEventListener("click", placeCaretAtEnd);
 
 terminal.input.addEventListener("keydown", (event) => {
   markCursorActive();
+
+  if (event.key === "Tab") {
+    event.preventDefault();
+    const partial = terminal.input.value.trim().toLowerCase();
+    if (!partial) return;
+    const match = Object.keys(COMMANDS).find(name =>
+      name.startsWith(partial) && !COMMANDS[name].hidden
+    );
+    if (match) {
+      terminal.input.value = match;
+      syncInput();
+      placeCaretAtEnd();
+    }
+  }
 
   if (["ArrowLeft", "Home"].includes(event.key)) {
     window.requestAnimationFrame(placeCaretAtEnd);
