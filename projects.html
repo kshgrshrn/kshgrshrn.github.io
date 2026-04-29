@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Projects — Kushagra Sharan</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <span class="sigil">§ projects</span>
+
+  <nav>
+    <a href="index.html">index</a>
+    <a href="projects.html" class="active">projects</a>
+    <a href="writing.html">writing</a>
+    <a href="about.html">about</a>
+    <a href="now.html">now</a>
+  </nav>
+
+  <main>
+
+    <h2>Selected Work</h2>
+
+    <div class="project">
+      <div class="proj-header">
+        <span class="proj-title">Semantic GST Schema Standardization Engine</span>
+        <span class="proj-year">2024 · EY internship</span>
+      </div>
+
+      <p>
+        NLP pipeline mapping inconsistent client tax headers to a unified 61-field GST schema.
+        No hardcoded rules — sentence embeddings handle the variation.
+      </p>
+
+      <p>
+        Fine-tuned <code style="font-size:11px;color:var(--accent);">all-MiniLM-L6-v2</code> on domain-specific header pairs.
+        Cosine similarity confidence improved +8.1%; inference 35% faster post fine-tuning.
+      </p>
+
+      <div class="proj-stats">
+        <span class="stat">Top-1 accuracy: <strong>89.8%</strong></span>
+        <span class="stat">Top-3 accuracy: <strong>98.0%</strong></span>
+        <span class="stat">Avg cosine sim (fine-tuned): <strong>94.9%</strong></span>
+        <span class="stat">Latency: <strong>4.2ms / column</strong></span>
+        <span class="stat">Benchmark: <strong>255 synthetic headers, seed=42</strong></span>
+      </div>
+
+      <div class="proj-links">
+        <a href="https://github.com/kshgrshrn/Semantic-GST-Schema-Standardization-Engine" target="_blank">
+          GitHub ↗
+        </a>
+      </div>
+    </div>
+
+  </main>
+
+</body>
+</html>
