@@ -76,6 +76,20 @@ const terminal = {
   eventsSeen: new Set()
 };
 
+const systemCursor = {
+  node: document.querySelector("#system-cursor"),
+  x: -24,
+  y: -24,
+  targetX: -24,
+  targetY: -24,
+  lastTargetX: -24,
+  lastTargetY: -24,
+  frame: null,
+  idleTimer: null,
+  initialized: false,
+  stable: false
+};
+
 let cursorActivityTimer;
 
 const COMMANDS = {
@@ -429,6 +443,7 @@ function enterIdleState() {
   document.body.classList.add("is-idle");
   terminal.idleNode = appendOutputLine("idle", "idle-line");
   terminal.output.append(terminal.idleNode);
+  scrollToBottom();
 }
 
 function removeIdleLine() {
@@ -457,7 +472,11 @@ function wait(ms) {
 
 function scrollToBottom() {
   window.requestAnimationFrame(() => {
-    terminal.output.scrollIntoView({ block: "end" });
+    const behavior = window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth";
+    terminal.output.scrollTo({
+      top: terminal.output.scrollHeight,
+      behavior
+    });
   });
 }
 
@@ -507,7 +526,93 @@ document.addEventListener("click", (event) => {
   markActivity();
 });
 
+function handleSystemCursorMove(event) {
+  if (!systemCursor.node || event.pointerType === "touch") return;
+
+  const target = event.target;
+  const isLink = Boolean(target.closest("a"));
+  const isTerminal = Boolean(target.closest(".input-row, .terminal-input, .input-field"));
+  const velocity = systemCursor.initialized
+    ? Math.hypot(
+      event.clientX - systemCursor.lastTargetX,
+      event.clientY - systemCursor.lastTargetY
+    )
+    : 0;
+
+  systemCursor.targetX = event.clientX;
+  systemCursor.targetY = event.clientY;
+  systemCursor.stable = isTerminal;
+  systemCursor.lastTargetX = event.clientX;
+  systemCursor.lastTargetY = event.clientY;
+
+  if (!systemCursor.initialized) {
+    systemCursor.x = event.clientX;
+    systemCursor.y = event.clientY;
+    systemCursor.initialized = true;
+    renderSystemCursor();
+    requestSystemCursorFrame();
+  }
+
+  systemCursor.node.classList.add("is-visible");
+  systemCursor.node.classList.toggle("is-link", isLink);
+  systemCursor.node.classList.toggle("is-terminal", isTerminal);
+  systemCursor.node.classList.toggle("is-fast", velocity > 34 && !isTerminal && !window.matchMedia("(prefers-reduced-motion: reduce)").matches);
+  systemCursor.node.classList.remove("is-idle");
+  requestSystemCursorFrame();
+
+  window.clearTimeout(systemCursor.idleTimer);
+  systemCursor.idleTimer = window.setTimeout(() => {
+    systemCursor.node?.classList.remove("is-fast");
+    systemCursor.node?.classList.add("is-idle");
+  }, 1300);
+}
+
+function requestSystemCursorFrame() {
+  if (systemCursor.frame || !systemCursor.node) return;
+  systemCursor.frame = window.requestAnimationFrame(updateSystemCursor);
+}
+
+function updateSystemCursor() {
+  const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const ease = reducedMotion || systemCursor.stable ? 1 : 0.28;
+
+  systemCursor.x += (systemCursor.targetX - systemCursor.x) * ease;
+  systemCursor.y += (systemCursor.targetY - systemCursor.y) * ease;
+  renderSystemCursor();
+
+  const isSettled = Math.abs(systemCursor.targetX - systemCursor.x) < 0.05 &&
+    Math.abs(systemCursor.targetY - systemCursor.y) < 0.05;
+
+  systemCursor.frame = isSettled
+    ? null
+    : window.requestAnimationFrame(updateSystemCursor);
+}
+
+function renderSystemCursor() {
+  systemCursor.node.style.setProperty("--system-cursor-x", `${systemCursor.x.toFixed(2)}px`);
+  systemCursor.node.style.setProperty("--system-cursor-y", `${systemCursor.y.toFixed(2)}px`);
+}
+
+window.addEventListener("pointerdown", () => {
+  systemCursor.node?.classList.add("is-down");
+});
+
+window.addEventListener("pointerup", () => {
+  window.setTimeout(() => {
+    systemCursor.node?.classList.remove("is-down");
+  }, 90);
+});
+
+window.addEventListener("pointerleave", () => {
+  systemCursor.node?.classList.remove("is-visible", "is-link", "is-terminal", "is-fast");
+});
+
+window.addEventListener("pointerenter", () => {
+  if (systemCursor.initialized) systemCursor.node?.classList.add("is-visible");
+});
+
 window.addEventListener("pointermove", (event) => {
+  handleSystemCursorMove(event);
   if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
   if (terminal.parallaxFrame) return;
 
