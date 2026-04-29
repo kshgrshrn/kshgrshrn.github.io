@@ -351,9 +351,21 @@ body.matrix-mode::after {
   border: 0;
   outline: 0;
   padding: 0;
+  margin: 0;
+  font: inherit;
+  letter-spacing: inherit;
   background: transparent;
   color: transparent;
   caret-color: transparent;
+}
+
+.input-mirror:empty::before {
+  content: "type help";
+  position: absolute;
+  margin-left: 10px;
+  color: var(--text);
+  opacity: 0.15;
+  pointer-events: none;
 }
 
 .cursor {
