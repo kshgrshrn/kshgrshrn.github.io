@@ -69,7 +69,10 @@ const terminal = {
   historyIndex: 0,
   busy: false,
   commandCounts: {},
-  rareEventSeen: false
+  rareEventSeen: false,
+  idleNode: null,
+  idleTimer: null,
+  parallaxFrame: null
 };
 
 let cursorActivityTimer;
@@ -77,46 +80,55 @@ let cursorActivityTimer;
 const COMMANDS = {
   help: {
     description: "commands",
+    pace: "quick",
     run: () => visibleCommands()
   },
   about: {
     description: "direction",
+    pace: "slow",
     beforePrint: () => focusShift(),
     run: ({ count }) => count > 1 ? CONTENT.aboutAfterRepeat : CONTENT.about
   },
   projects: {
     description: "work",
+    pace: "measured",
     run: () => projectList()
   },
   now: {
     description: "current",
+    pace: "measured",
     run: () => CONTENT.now
   },
   writing: {
     description: "notes",
+    pace: "quick",
     run: () => CONTENT.writing
   },
   links: {
     description: "external",
+    pace: "quick",
     run: () => CONTENT.links
   },
   clear: {
     description: "reset",
-    run: () => {
-      terminal.output.replaceChildren();
+    run: async () => {
+      await ghostClear();
       return [];
     }
   },
   why: {
     hidden: true,
+    pace: "slow",
     run: () => CONTENT.hidden.why
   },
   trace: {
     hidden: true,
+    pace: "quick",
     run: () => resolveLines(CONTENT.hidden.trace)
   },
   axiom: {
     hidden: true,
+    pace: "slow",
     run: () => CONTENT.hidden.axiom
   }
 };
@@ -159,22 +171,33 @@ function appendOutputLine(line, className = "") {
   return row;
 }
 
-async function printLines(lines, className = "") {
+async function printLines(lines, options = {}) {
+  const settings = typeof options === "string" ? { className: options } : options;
   const block = document.createElement("div");
   block.className = "output-block";
   terminal.output.append(block);
 
   for (const [index, line] of lines.entries()) {
-    block.append(appendOutputLine(line, className));
+    const row = appendOutputLine(line, settings.className);
+    block.append(row);
+    maybeRenderAnomaly(row);
     scrollToBottom();
-    await wait(outputDelay(index, line));
+    await wait(outputDelay(index, line, settings.pace));
   }
 }
 
-function outputDelay(index, line) {
+function outputDelay(index, line, pace = "default") {
+  const base = {
+    quick: 25,
+    default: 34,
+    measured: 42,
+    slow: 54
+  }[pace] ?? 34;
+
   const lengthBias = Math.min(line.length, 72) * 0.35;
-  const phase = (index % 3) * 9;
-  return 34 + lengthBias + phase;
+  const phase = ((index * 17 + line.length * 5) % 19) - 6;
+  const drift = Math.sin((index + 1) * 1.7 + line.length) * 5;
+  return Math.max(18, base + lengthBias + phase + drift);
 }
 
 function resolveLines(lines) {
@@ -202,6 +225,7 @@ async function runCommand(rawCommand, options = {}) {
   if (!command || terminal.busy) return;
 
   terminal.busy = true;
+  markActivity();
 
   if (options.echo !== false) appendCommand(command);
   pushHistory(command);
@@ -212,9 +236,8 @@ async function runCommand(rawCommand, options = {}) {
     await printLines([`command not found: ${escapeHtml(command)}`, "type help"], "error");
   } else {
     if (entry.beforePrint) await entry.beforePrint();
-    const lines = entry.run({ command, count });
-    if (lines.length) await printLines(lines);
-    await maybePrintRareLine(command);
+    const lines = await entry.run({ command, count });
+    if (lines.length) await printLines(lines, { pace: entry.pace });
   }
 
   terminal.busy = false;
@@ -227,12 +250,30 @@ function recordCommand(command) {
   return terminal.commandCounts[command];
 }
 
-async function maybePrintRareLine(command) {
-  if (terminal.rareEventSeen || command === "clear") return;
-  if (Math.random() >= 0.008) return;
+function maybeTriggerAnomaly() {
+  if (terminal.rareEventSeen) return false;
+  if (Math.random() >= 0.006) return false;
 
   terminal.rareEventSeen = true;
-  await printLines(["checksum drift: one bit left unclassified."]);
+  return true;
+}
+
+function maybeRenderAnomaly(row) {
+  if (!maybeTriggerAnomaly()) return;
+
+  row.classList.add("is-anomaly");
+  window.setTimeout(() => {
+    row.classList.remove("is-anomaly");
+  }, 90);
+}
+
+async function ghostClear() {
+  if (!terminal.output.childElementCount) return;
+
+  terminal.output.classList.add("is-clearing");
+  await wait(110);
+  terminal.output.replaceChildren();
+  terminal.output.classList.remove("is-clearing");
 }
 
 function pushHistory(command) {
@@ -246,6 +287,7 @@ function pushHistory(command) {
 function syncInput() {
   terminal.mirror.textContent = terminal.input.value;
   markCursorActive();
+  markActivity();
 }
 
 function placeCaretAtEnd() {
@@ -259,6 +301,30 @@ function markCursorActive() {
   cursorActivityTimer = window.setTimeout(() => {
     terminal.form.classList.remove("is-active");
   }, 520);
+}
+
+function markActivity() {
+  document.body.classList.remove("is-idle");
+  removeIdleLine();
+  window.clearTimeout(terminal.idleTimer);
+  terminal.idleTimer = window.setTimeout(() => {
+    if (!terminal.busy) enterIdleState();
+  }, 42000);
+}
+
+function enterIdleState() {
+  if (terminal.idleNode) return;
+
+  document.body.classList.add("is-idle");
+  terminal.idleNode = appendOutputLine("idle", "idle-line");
+  terminal.output.append(terminal.idleNode);
+}
+
+function removeIdleLine() {
+  if (!terminal.idleNode) return;
+
+  terminal.idleNode.remove();
+  terminal.idleNode = null;
 }
 
 function recallHistory(direction) {
@@ -327,6 +393,20 @@ terminal.input.addEventListener("keydown", (event) => {
 
 document.addEventListener("click", (event) => {
   if (!event.target.closest("a")) terminal.input.focus();
+  markActivity();
+});
+
+window.addEventListener("pointermove", (event) => {
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  if (terminal.parallaxFrame) return;
+
+  terminal.parallaxFrame = window.requestAnimationFrame(() => {
+    const x = (event.clientX / window.innerWidth - 0.5) * 1.8;
+    const y = (event.clientY / window.innerHeight - 0.5) * 1.4;
+    document.documentElement.style.setProperty("--depth-x", `${x.toFixed(2)}px`);
+    document.documentElement.style.setProperty("--depth-y", `${y.toFixed(2)}px`);
+    terminal.parallaxFrame = null;
+  });
 });
 
 async function boot() {
