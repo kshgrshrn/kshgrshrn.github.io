@@ -10,7 +10,7 @@ const PROJECTS = [
 
 const CONTENT = {
   intro: [
-    "Loading standard terminal.......... OK",
+    "Kushagra Sharan",
     "Connection established.",
     "type help"
   ],
@@ -358,8 +358,6 @@ async function executeCommand(command) {
     const isSpecialCase = command.includes("&&");
     const nearest = nearestCommand(command);
     
-    // If it has spaces, it's likely a sentence for the LLM. 
-    // Otherwise, check if it's just a typo of a known command.
     if (isSpecialCase || (!command.includes(" ") && nearest.distance <= 2) || command.trim().length <= 2) {
       await printLines(invalidResponse(command), "error");
       return;
@@ -368,7 +366,7 @@ async function executeCommand(command) {
     await printLines([`analyzing input anomalous signature...`], { className: "idle-line", pace: "quick" });
 
     try {
-      const workerUrl = "kushagra-terminal-ai.kushagrasharan2006.workers.dev";
+      const workerUrl = "https://kushagra-terminal-ai.kushagrasharan2006.workers.dev";
       
       const response = await fetch(workerUrl, {
         method: "POST",
