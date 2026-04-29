@@ -3,66 +3,50 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Kushagra Sharan. Personal system interface.">
   <title>Kushagra Sharan</title>
-  <meta name="description" content="Data Science & Engineering. AI interpretability, ML systems, physics.">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
+  <main class="terminal-shell" aria-label="Personal terminal interface">
+    <header class="system-header" aria-label="System identity">
+      <div>
+        <p class="eyebrow">node</p>
+        <h1>Kushagra Sharan</h1>
+      </div>
+      <div class="status-line" aria-hidden="true">
+        <span class="status-dot"></span>
+        <span class="node-status">online</span>
+      </div>
+    </header>
 
-  <span class="sigil">§ index</span>
+    <section class="terminal" aria-label="Command terminal">
+      <div id="terminal-output" class="terminal-output" aria-live="polite"></div>
 
-  <nav>
-    <a href="projects.html">projects</a>
-    <a href="writing.html">writing</a>
-    <a href="about.html">about</a>
-    <a href="now.html">now</a>
-  </nav>
+      <form id="terminal-form" class="input-row" autocomplete="off">
+        <label for="terminal-input" class="prompt">ks@node:~$</label>
+        <input
+          id="terminal-input"
+          class="terminal-input"
+          name="command"
+          type="text"
+          spellcheck="false"
+          autocapitalize="none"
+          autocomplete="off"
+          aria-label="Type a command"
+        >
+      </form>
+    </section>
 
-  <main>
-
-    <div class="name-block">
-      <h1>Kushagra Sharan</h1>
-      <span class="descriptor">Data Science &amp; Engineering · MIT Manipal · 2028</span>
-    </div>
-
-    <span class="gap-lg"></span>
-
-    <div class="interests">
-      <span>AI interpretability</span>
-      <span>mechanistic interpretability</span>
-      <span>ML systems</span>
-      <span>physics</span>
-    </div>
-
-    <span class="gap-lg"></span>
-
-    <hr class="rule">
-
-    <div class="entry">
-      <span class="org">EY · Gurugram<br><small>2024 · AI Intern</small></span>
-      <span class="detail">NLP pipeline for semantic tax schema standardization.<br>Sentence embeddings over 61-field GST schema. Approved for senior engineering review.</span>
-    </div>
-
-    <div class="entry">
-      <span class="org">NASA SSDC<br><small>Dick Edwards Award</small></span>
-      <span class="detail">Led 50+ member international team.<br>Exceptional Leadership recognition.</span>
-    </div>
-
-    <hr class="rule">
-
-    <div class="link-row">
-      <a href="https://github.com/kshgrshrn" target="_blank">
-        GitHub <span class="arr">↗</span>
-      </a>
-      <a href="https://linkedin.com/in/kushagrasharan" target="_blank">
-        LinkedIn <span class="arr">↗</span>
-      </a>
-      <a href="mailto:kushagrasharan2006@gmail.com">
-        kushagrasharan2006@gmail.com
-      </a>
-    </div>
-
+    <nav class="command-index" aria-label="Available commands">
+      <button type="button" data-command="help">help</button>
+      <button type="button" data-command="about">about</button>
+      <button type="button" data-command="projects">projects</button>
+      <button type="button" data-command="writing">writing</button>
+      <button type="button" data-command="now">now</button>
+    </nav>
   </main>
 
+  <script src="script.js" defer></script>
 </body>
 </html>
