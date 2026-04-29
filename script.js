@@ -39,21 +39,20 @@ const CONTENT = {
   ],
   hidden: {
     why: [
-      "understanding precedes control.",
-      "systems become useful when their failure modes become visible."
+      "for the love of it all.",
+      "to strive for a better life."
     ],
     trace: [
       () => `trace: ${timeBand()} / local`,
       "signal retained. context compressed."
     ],
     axiom: [
-      "explain the system before optimizing it.",
-      "alignment is an interface problem at scale."
+      "learn. ask. furnish. build.",
     ]
   },
   aboutAfterRepeat: [
     "Same node. Lower verbosity.",
-    "Interpretability as instrumentation. Physics as constraint.",
+    "Life, Humanities, Sciences, Tech.",
     "",
     `github   -> <a href="https://github.com/kshgrshrn" target="_blank" rel="noreferrer">https://github.com/kshgrshrn</a>`,
     `linkedin -> <a href="https://www.linkedin.com/in/kushagrasharan/" target="_blank" rel="noreferrer">https://www.linkedin.com/in/kushagrasharan/</a>`
@@ -72,7 +71,9 @@ const terminal = {
   rareEventSeen: false,
   idleNode: null,
   idleTimer: null,
-  parallaxFrame: null
+  parallaxFrame: null,
+  litLine: null,
+  eventsSeen: new Set()
 };
 
 let cursorActivityTimer;
@@ -91,13 +92,13 @@ const COMMANDS = {
   },
   projects: {
     description: "work",
-    pace: "measured",
+    pace: "structured",
     run: () => projectList()
   },
   now: {
     description: "current",
     pace: "measured",
-    run: () => CONTENT.now
+    run: () => currentNow()
   },
   writing: {
     description: "notes",
@@ -130,6 +131,14 @@ const COMMANDS = {
     hidden: true,
     pace: "slow",
     run: () => CONTENT.hidden.axiom
+  },
+  layer: {
+    hidden: true,
+    pace: "measured",
+    run: () => [
+      "surface: command",
+      "depth: interpretation"
+    ]
   }
 };
 
@@ -189,6 +198,7 @@ async function printLines(lines, options = {}) {
 function outputDelay(index, line, pace = "default") {
   const base = {
     quick: 25,
+    structured: 20,
     default: 34,
     measured: 42,
     slow: 54
@@ -213,7 +223,26 @@ function timeBand() {
   return "late";
 }
 
+function currentNow() {
+  const timeStudy = {
+    night: "studying: failure modes / safety",
+    morning: "studying: systems before scale",
+    day: "studying: interpretability / safety",
+    evening: "studying: abstractions under constraint",
+    late: "studying: compression / uncertainty"
+  };
+
+  return [
+    "building: ML systems",
+    timeStudy[timeBand()],
+    "thinking: physics as compression"
+  ];
+}
+
 async function focusShift() {
+  if (terminal.eventsSeen.has("about-focus")) return;
+
+  terminal.eventsSeen.add("about-focus");
   await wait(150);
   document.body.classList.add("is-focusing");
   await wait(210);
@@ -221,28 +250,110 @@ async function focusShift() {
 }
 
 async function runCommand(rawCommand, options = {}) {
-  const command = rawCommand.trim().toLowerCase();
-  if (!command || terminal.busy) return;
+  const commandText = rawCommand.trim().toLowerCase();
+  if (!commandText || terminal.busy) return;
 
   terminal.busy = true;
   markActivity();
 
-  if (options.echo !== false) appendCommand(command);
-  pushHistory(command);
-  const count = recordCommand(command);
+  if (options.echo !== false) appendCommand(commandText);
+  pushHistory(commandText);
 
-  const entry = COMMANDS[command];
-  if (!entry) {
-    await printLines([`command not found: ${escapeHtml(command)}`, "type help"], "error");
+  if (commandText.includes("&&")) {
+    await runCommandChain(commandText);
   } else {
-    if (entry.beforePrint) await entry.beforePrint();
-    const lines = await entry.run({ command, count });
-    if (lines.length) await printLines(lines, { pace: entry.pace });
+    await executeCommand(commandText);
   }
 
   terminal.busy = false;
   terminal.input.focus();
   scrollToBottom();
+}
+
+async function runCommandChain(commandText) {
+  const parts = commandText.split("&&");
+  const commands = parts.map((part) => part.trim()).filter(Boolean);
+
+  if (!commands.length || parts.some((part) => !part.trim())) {
+    await printLines(["chain incomplete.", "explicit links require both sides."], "error");
+    return;
+  }
+
+  for (const command of commands) {
+    await executeCommand(command);
+  }
+}
+
+async function executeCommand(command) {
+  const count = recordCommand(command);
+  const entry = COMMANDS[command];
+
+  if (!entry) {
+    await printLines(invalidResponse(command), "error");
+    return;
+  }
+
+  if (entry.beforePrint) await entry.beforePrint();
+
+  const lines = await entry.run({ command, count });
+  if (lines.length) await printLines(lines, { pace: entry.pace });
+}
+
+function invalidResponse(command) {
+  const escaped = escapeHtml(command);
+
+  if (command.includes(" ")) {
+    return [
+      `unparsed input: ${escaped}`,
+      "use && for explicit chaining."
+    ];
+  }
+
+  const nearest = nearestCommand(command);
+  if (nearest.distance <= 2) {
+    return [
+      `unresolved command: ${escaped}`,
+      `nearest route: ${nearest.name}`
+    ];
+  }
+
+  if (command.length <= 2) {
+    return [`token has no handler: ${escaped}`];
+  }
+
+  return [
+    `unresolved command: ${escaped}`,
+    "surface unchanged."
+  ];
+}
+
+function nearestCommand(command) {
+  return Object.keys(COMMANDS).reduce((best, name) => {
+    const distance = editDistance(command, name);
+    return distance < best.distance ? { name, distance } : best;
+  }, { name: "", distance: Infinity });
+}
+
+function editDistance(a, b) {
+  const previous = Array.from({ length: b.length + 1 }, (_, index) => index);
+  const current = Array.from({ length: b.length + 1 }, () => 0);
+
+  for (let i = 1; i <= a.length; i += 1) {
+    current[0] = i;
+
+    for (let j = 1; j <= b.length; j += 1) {
+      const cost = a[i - 1] === b[j - 1] ? 0 : 1;
+      current[j] = Math.min(
+        current[j - 1] + 1,
+        previous[j] + 1,
+        previous[j - 1] + cost
+      );
+    }
+
+    previous.splice(0, previous.length, ...current);
+  }
+
+  return previous[b.length];
 }
 
 function recordCommand(command) {
@@ -400,14 +511,36 @@ window.addEventListener("pointermove", (event) => {
   if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
   if (terminal.parallaxFrame) return;
 
+  const pointerX = event.clientX;
+  const pointerY = event.clientY;
+
   terminal.parallaxFrame = window.requestAnimationFrame(() => {
-    const x = (event.clientX / window.innerWidth - 0.5) * 1.8;
-    const y = (event.clientY / window.innerHeight - 0.5) * 1.4;
-    document.documentElement.style.setProperty("--depth-x", `${x.toFixed(2)}px`);
-    document.documentElement.style.setProperty("--depth-y", `${y.toFixed(2)}px`);
+    const normalizedX = pointerX / window.innerWidth - 0.5;
+    const normalizedY = pointerY / window.innerHeight - 0.5;
+    const root = document.documentElement.style;
+
+    root.setProperty("--depth-x", `${(normalizedX * 1.4).toFixed(2)}px`);
+    root.setProperty("--depth-y", `${(normalizedY * 1.1).toFixed(2)}px`);
+    root.setProperty("--plane-x", `${(normalizedX * -2.4).toFixed(2)}px`);
+    root.setProperty("--plane-y", `${(normalizedY * -1.8).toFixed(2)}px`);
+    root.setProperty("--cursor-depth-x", `${(normalizedX * 0.5).toFixed(2)}px`);
+    root.setProperty("--cursor-depth-y", `${(normalizedY * 0.35).toFixed(2)}px`);
+    root.setProperty("--light-x", `${pointerX}px`);
+    root.setProperty("--light-y", `${pointerY}px`);
+
+    updateLightResponse(pointerX, pointerY);
     terminal.parallaxFrame = null;
   });
 });
+
+function updateLightResponse(x, y) {
+  const target = document.elementFromPoint(x, y)?.closest(".output-line, .line, .input-row");
+  if (target === terminal.litLine) return;
+
+  terminal.litLine?.classList.remove("is-lit");
+  terminal.litLine = target;
+  terminal.litLine?.classList.add("is-lit");
+}
 
 async function boot() {
   terminal.input.focus();
