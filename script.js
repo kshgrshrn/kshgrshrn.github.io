@@ -363,7 +363,7 @@ async function executeCommand(command) {
       return;
     }
 
-    await printLines([`analyzing input anomalous signature...`], { className: "idle-line", pace: "quick" });
+    await printLines([`processing...`], { className: "idle-line", pace: "quick" });
 
     try {
       const workerUrl = "https://kushagra-terminal-ai.kushagrasharan2006.workers.dev";
@@ -660,6 +660,8 @@ function handleSystemCursorMove(event) {
     )
     : 0;
 
+  systemCursor.x = event.clientX;
+  systemCursor.y = event.clientY;
   systemCursor.targetX = event.clientX;
   systemCursor.targetY = event.clientY;
   systemCursor.stable = isTerminal;
@@ -667,46 +669,22 @@ function handleSystemCursorMove(event) {
   systemCursor.lastTargetY = event.clientY;
 
   if (!systemCursor.initialized) {
-    systemCursor.x = event.clientX;
-    systemCursor.y = event.clientY;
     systemCursor.initialized = true;
-    renderSystemCursor();
-    requestSystemCursorFrame();
   }
+
+  renderSystemCursor();
 
   systemCursor.node.classList.add("is-visible");
   systemCursor.node.classList.toggle("is-link", isLink);
   systemCursor.node.classList.toggle("is-terminal", isTerminal);
   systemCursor.node.classList.toggle("is-fast", velocity > 34 && !isTerminal && !window.matchMedia("(prefers-reduced-motion: reduce)").matches);
   systemCursor.node.classList.remove("is-idle");
-  requestSystemCursorFrame();
 
   window.clearTimeout(systemCursor.idleTimer);
   systemCursor.idleTimer = window.setTimeout(() => {
     systemCursor.node?.classList.remove("is-fast");
     systemCursor.node?.classList.add("is-idle");
   }, 1300);
-}
-
-function requestSystemCursorFrame() {
-  if (systemCursor.frame || !systemCursor.node) return;
-  systemCursor.frame = window.requestAnimationFrame(updateSystemCursor);
-}
-
-function updateSystemCursor() {
-  const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  const ease = reducedMotion || systemCursor.stable ? 1 : 0.28;
-
-  systemCursor.x += (systemCursor.targetX - systemCursor.x) * ease;
-  systemCursor.y += (systemCursor.targetY - systemCursor.y) * ease;
-  renderSystemCursor();
-
-  const isSettled = Math.abs(systemCursor.targetX - systemCursor.x) < 0.05 &&
-    Math.abs(systemCursor.targetY - systemCursor.y) < 0.05;
-
-  systemCursor.frame = isSettled
-    ? null
-    : window.requestAnimationFrame(updateSystemCursor);
 }
 
 function renderSystemCursor() {
