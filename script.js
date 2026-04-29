@@ -11,7 +11,7 @@ const PROJECTS = [
 const CONTENT = {
   intro: [
     "Kushagra Sharan",
-    "Connection established.",
+    "Builder, Researcher, Occasional Team Lead.",
     "type help"
   ],
   about: [
@@ -112,17 +112,6 @@ const COMMANDS = {
     hidden: true,
     run: () => ["node is not in the sudoers file. This incident will be reported."]
   },
-  sound: {
-    description: "toggle sounds",
-    pace: "quick",
-    run: () => {
-      document.body.classList.toggle("mute-mode");
-      playKeystroke();
-      const isMuted = document.body.classList.contains("mute-mode");
-      if (isMuted) return ["Terminal sounds muted."];
-      return ["Terminal sounds enabled."];
-    }
-  },
   matrix: {
     hidden: true,
     run: () => {
@@ -145,21 +134,6 @@ const COMMANDS = {
     description: "resume",
     pace: "measured",
     run: () => CONTENT.experience
-  },
-  kfetch: {
-    description: "sysinfo",
-    pace: "quick",
-    run: () => [
-      "          \\    /       <strong style='color: var(--accent)'>kushagra@node</strong>",
-      "           \\  /        -------------",
-      "            \\/         <strong>Course</strong>: B.Tech Data Science & Eng (2028)",
-      "     -------|-------    <strong>College</strong>: MIT Manipal",
-      "            |           <strong>Previous Experience</strong>: AI Intern @ Ernst & Young",
-      "           / \\         <strong>Uptime</strong>: ~19 years",
-      "          /   \\        <strong>Theme</strong>: Minimal Terminal Dark",
-      "         /     \\       ",
-      ""
-    ]
   },
   now: {
     description: "current",
@@ -572,22 +546,11 @@ function commandFromHash() {
   return COMMANDS[hash] ? hash : "";
 }
 
-const keyClackAudio = new Audio('data:audio/wav;base64,UklGRmYBAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YUMBAAAHAQwAGgA7AEkAWAByAIMAnACqAAMAEwAhADMAOQA9AEkATABXAF4AbQBrAHUAcwBaADMACQABABIAEgAeABoAIQAwADcANwA0AEMAQQAyADEAMAAtACYAJAAXABIAAADe/9z/5v/s/+b/4//V/9X/0f/E/8j/0v/U/9L/tf+l/6z/s/+x/7T/rP+n/6X/r/+1/LMAAA==');
-keyClackAudio.volume = 0.05;
-
-function playKeystroke() {
-  if (!document.body.classList.contains("mute-mode")) {
-    keyClackAudio.currentTime = 0;
-    keyClackAudio.play().catch(() => {});
-  }
-}
-
 terminal.form.addEventListener("submit", (event) => {
   event.preventDefault();
   const command = terminal.input.value;
   terminal.input.value = "";
   
-  playKeystroke();
   if (navigator.vibrate) navigator.vibrate(15);
   
   syncInput();
@@ -595,7 +558,6 @@ terminal.form.addEventListener("submit", (event) => {
 });
 
 terminal.input.addEventListener("input", () => {
-    playKeystroke();
     syncInput();
 });
 terminal.input.addEventListener("focus", placeCaretAtEnd);
