@@ -1,4 +1,24 @@
 const SESSION_START = Date.now();
+
+let audioCtx = null;
+
+function playKeyClick() {
+  try {
+    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    const osc    = audioCtx.createOscillator();
+    const gain   = audioCtx.createGain();
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+    osc.type      = "square";
+    osc.frequency.setValueAtTime(1200, audioCtx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(600, audioCtx.currentTime + 0.025);
+    gain.gain.setValueAtTime(0.04, audioCtx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.04);
+    osc.start(audioCtx.currentTime);
+    osc.stop(audioCtx.currentTime + 0.05);
+  } catch (e) { /* silence audio errors */ }
+}
+
 const THEMES = ["default", "amber", "blue"];
 let themeIndex = 0;
 
@@ -16,7 +36,6 @@ const CONTENT = {
   intro: [
     "Kushagra Sharan",
     "Builder, Researcher, Occasional Team Lead.",
-    "type help"
   ],
   about: [
     "Kushagra Sharan",
@@ -114,7 +133,7 @@ let cursorActivityTimer;
 
 const COMMANDS = {
   help: {
-    description: "list",
+    description: " -- list",
     pace: "quick",
     run: () => Object.entries(COMMANDS)
       .filter(([, cmd]) => !cmd.hidden)
@@ -132,23 +151,108 @@ const COMMANDS = {
     }
   },
   about: {
-    description: "direction",
+    description: " -- direction",
     pace: "slow",
     beforePrint: () => focusShift(),
     run: ({ count }) => count > 1 ? CONTENT.aboutAfterRepeat : CONTENT.about
   },
   projects: {
-    description: "work",
+    description: " -- work",
     pace: "structured",
-    run: () => projectList()
+    run: async () => {
+      await renderProjects();
+      return [];
+    }
   },
   experience: {
-    description: "resume",
+    description: " -- resume",
     pace: "measured",
-    run: () => CONTENT.experience
+    run: async () => {
+      const roles = [
+        {
+          title:   "Ernst & Young (EY)  ·  AI Intern",
+          period:  "Jul – Aug 2025  ·  Gurugram",
+          bullets: [
+            "built semantic schema standardization engine (Sentence Transformers)",
+            "mapped inconsistent GST headers to a unified 61-field schema",
+            "fine-tuned all-MiniLM-L6-v2 → +8.1% cosine similarity, 35% faster inference",
+            "automated invoice ingestion via REST APIs + Selenium",
+            "built reconciliation dashboards surfacing mismatch trends for audit"
+          ]
+        },
+        {
+          title:   "Graceland Asset Management  ·  Data Analyst Intern",
+          period:  "Jun – Aug 2024  ·  Hybrid",
+          bullets: [
+            "cleaned multi-source real estate datasets using pandas",
+            "exploratory analysis supporting internal benchmarking",
+            "produced summary reports adopted for operational evaluation"
+          ]
+        }
+      ];
+
+      const block = document.createElement("div");
+      block.className = "output-block";
+      terminal.output.append(block);
+
+      for (let r = 0; r < roles.length; r++) {
+        const role = roles[r];
+
+        // Title — highlight class
+        const titleRow = document.createElement("div");
+        titleRow.className = "output-line exp-title";
+        titleRow.textContent = role.title;
+        block.append(titleRow);
+        scrollToBottom();
+        await wait(80);
+
+        // Period
+        const periodRow = document.createElement("div");
+        periodRow.className = "output-line exp-period";
+        periodRow.textContent = role.period;
+        block.append(periodRow);
+        scrollToBottom();
+        await wait(60);
+
+        // Bullets — stagger in
+        for (const bullet of role.bullets) {
+          const bRow = document.createElement("div");
+          bRow.className = "output-line exp-bullet";
+          bRow.textContent = "";
+          block.append(bRow);
+          scrollToBottom();
+
+          // Typewriter each bullet
+          for (const char of `  · ${bullet}`) {
+            bRow.textContent += char;
+            await wait(12 + Math.random() * 8);
+          }
+          await wait(30);
+        }
+
+        // Separator between roles (not after last)
+        if (r < roles.length - 1) {
+          await wait(100);
+          const sep = document.createElement("div");
+          sep.className = "output-line exp-sep";
+          sep.textContent = "";
+          block.append(sep);
+          scrollToBottom();
+
+          const sepText = "─".repeat(48);
+          for (const char of sepText) {
+            sep.textContent += char;
+            await wait(6);
+          }
+          await wait(100);
+        }
+      }
+
+      return [];
+    }
   },
   now: {
-    description: "current",
+    description: " -- current",
     pace: "measured",
     run: () => currentNow()
   },
@@ -158,12 +262,12 @@ const COMMANDS = {
     run: () => CONTENT.writing
   },
   links: {
-    description: "external",
+    description: " -- external",
     pace: "quick",
     run: () => CONTENT.links
   },
   resume: {
-    description: "download",
+    description: " -- download",
     pace: "quick",
     run: () => [
       `cv -> <a href="/resume.pdf" target="_blank" rel="noreferrer">kushagra_sharan_resume.pdf</a>`,
@@ -171,36 +275,144 @@ const COMMANDS = {
     ]
   },
   skills: {
-    description: "stack",
+    description: " -- stack",
     pace: "structured",
-    run: () => [
-      "languages     python, sql, java, c",
-      "ml / nlp      hugging face, sentence-transformers, scikit-learn",
-      "data          pandas, numpy, matplotlib, seaborn",
-      "infra         fastapi, selenium, rest apis, git, jupyter",
-      "domains       nlp, ml systems, financial data, workflow automation"
-    ]
+    run: async () => {
+      const skillGroups = [
+        {
+          label: "languages",
+          items: [
+            { name: "python",     pct: 92 },
+            { name: "sql",        pct: 80 },
+            { name: "java",       pct: 68 },
+            { name: "c",          pct: 60 }
+          ]
+        },
+        {
+          label: "ml / nlp",
+          items: [
+            { name: "hugging face",           pct: 88 },
+            { name: "sentence-transformers",  pct: 90 },
+            { name: "scikit-learn",           pct: 82 }
+          ]
+        },
+        {
+          label: "data",
+          items: [
+            { name: "pandas",     pct: 90 },
+            { name: "numpy",      pct: 84 },
+            { name: "matplotlib", pct: 76 }
+          ]
+        },
+        {
+          label: "infra",
+          items: [
+            { name: "fastapi",    pct: 70 },
+            { name: "selenium",   pct: 72 },
+            { name: "git",        pct: 85 }
+          ]
+        }
+      ];
+
+      const BAR_WIDTH = 20;
+      const block = document.createElement("div");
+      block.className = "output-block";
+      terminal.output.append(block);
+
+      for (const group of skillGroups) {
+        // Group label
+        const labelRow = document.createElement("div");
+        labelRow.className = "output-line skill-label";
+        labelRow.textContent = group.label;
+        block.append(labelRow);
+        await wait(60);
+
+        for (const skill of group.items) {
+          const row = document.createElement("div");
+          row.className = "output-line skill-bar-line";
+          block.append(row);
+          scrollToBottom();
+
+          const filled = Math.round((skill.pct / 100) * BAR_WIDTH);
+          const nameCol = skill.name.padEnd(24);
+          const pctCol  = String(skill.pct).padStart(3) + "%";
+
+          // Animate fill
+          for (let i = 0; i <= filled; i++) {
+            const bar = "█".repeat(i) + "░".repeat(BAR_WIDTH - i);
+            row.textContent = `  ${nameCol} [${bar}] ${pctCol}`;
+            await wait(22);
+          }
+          await wait(40);
+        }
+
+        await wait(80);
+      }
+
+      return [];
+    }
   },
   awards: {
-    description: "recognition",
+    description: " -- recognition",
     pace: "measured",
-    run: () => [
-      "Dick Edwards Exceptional Leadership Award",
-      "  NASA Space Settlement Design Competition",
-      "  top 0.5% global cohort — Titusville, FL  2022–23",
-      "",
-      "National Winner + Asian Regional Runner-Up",
-      "  NASA / Boeing orbital habitat proposal",
-      "  directed 50+ member international team",
-      "",
-      "Global Talent Search Examination",
-      "  All India Rank 1 — English",
-      "",
-      "Cambridge English First — CEFR C1, Grade A"
-    ]
+    run: async () => {
+      const awards = [
+        {
+          name:    "Dick Edwards Exceptional Leadership Award",
+          context: "NASA Space Settlement Design Competition · top 0.5% global cohort",
+          detail:  "National Winner · Asian Regional & International Runner-Up · 2022–23"
+        },
+        {
+          name:    "Global Talent Search Examination",
+          context: "All India Rank 1 — English",
+          detail:  ""
+        },
+        {
+          name:    "Cambridge English First",
+          context: "CEFR C1, Grade A",
+          detail:  ""
+        }
+      ];
+
+      const block = document.createElement("div");
+      block.className = "output-block";
+      terminal.output.append(block);
+
+      for (const award of awards) {
+        // Name flashes bright then settles
+        const nameRow = document.createElement("div");
+        nameRow.className = "output-line award-name award-flash";
+        nameRow.textContent = award.name;
+        block.append(nameRow);
+        scrollToBottom();
+        await wait(160);
+        nameRow.classList.remove("award-flash");
+        nameRow.classList.add("award-settled");
+
+        const ctxRow = document.createElement("div");
+        ctxRow.className = "output-line award-ctx";
+        ctxRow.textContent = `  ${award.context}`;
+        block.append(ctxRow);
+        scrollToBottom();
+        await wait(50);
+
+        if (award.detail) {
+          const detRow = document.createElement("div");
+          detRow.className = "output-line award-detail";
+          detRow.textContent = `  ${award.detail}`;
+          block.append(detRow);
+          scrollToBottom();
+          await wait(50);
+        }
+
+        await wait(140);
+      }
+
+      return [];
+    }
   },
   clear: {
-    description: "reset",
+    description: " -- reset",
     run: async () => {
       await ghostClear();
       return [];
@@ -274,13 +486,73 @@ function visibleCommands() {
     .map(([name]) => name);
 }
 
-function projectList() {
-  if (!PROJECTS.length) return ["No projects listed."];
+async function renderProjects() {
+  if (!PROJECTS.length) {
+    await printLines(["no projects listed."]);
+    return;
+  }
 
-  return PROJECTS.flatMap((project) => [
-    `<strong>${project.name}</strong> - ${project.summary}`,
-    `  <a href="${project.href}" target="_blank" rel="noreferrer">view -></a>`
-  ]);
+  const block = document.createElement("div");
+  block.className = "output-block";
+  terminal.output.append(block);
+
+  for (const project of PROJECTS) {
+    const card = document.createElement("div");
+    card.className = "output-line project-card";
+    block.append(card);
+    scrollToBottom();
+
+    // Draw top border character by character
+    const topBorder = "┌" + "─".repeat(52) + "┐";
+    card.textContent = "";
+
+    const borderRow = document.createElement("div");
+    borderRow.className = "output-line project-border";
+    block.append(borderRow);
+    for (const char of topBorder) {
+      borderRow.textContent += char;
+      await wait(5);
+    }
+
+    // Name line
+    const nameRow = document.createElement("div");
+    nameRow.className = "output-line project-name-row";
+    nameRow.innerHTML = `│ <strong>${project.name}</strong>${" ".repeat(Math.max(0, 51 - project.name.length))}│`;
+    block.append(nameRow);
+    scrollToBottom();
+    await wait(60);
+
+    // Summary line (wrap at 50 chars)
+    const summaryRow = document.createElement("div");
+    summaryRow.className = "output-line project-summary";
+    const trimmed = project.summary.length > 50
+      ? project.summary.slice(0, 47) + "..."
+      : project.summary;
+    summaryRow.textContent = `│ ${trimmed.padEnd(51)}│`;
+    block.append(summaryRow);
+    scrollToBottom();
+    await wait(50);
+
+    // Link line
+    const linkRow = document.createElement("div");
+    linkRow.className = "output-line project-link-row";
+    linkRow.innerHTML = `│ <a href="${project.href}" target="_blank" rel="noreferrer">view →</a>${" ".repeat(46)}│`;
+    block.append(linkRow);
+    scrollToBottom();
+    await wait(40);
+
+    // Bottom border
+    const botRow = document.createElement("div");
+    botRow.className = "output-line project-border";
+    block.append(botRow);
+    const botBorder = "└" + "─".repeat(52) + "┘";
+    for (const char of botBorder) {
+      botRow.textContent += char;
+      await wait(5);
+    }
+
+    await wait(120);
+  }
 }
 
 function appendCommand(command) {
@@ -650,6 +922,7 @@ terminal.input.addEventListener("focus", placeCaretAtEnd);
 terminal.input.addEventListener("click", placeCaretAtEnd);
 
 terminal.input.addEventListener("keydown", (event) => {
+  playKeyClick();
   markCursorActive();
 
   if (event.key === "Tab") {
@@ -837,10 +1110,57 @@ function updateLightResponse(x, y) {
   terminal.litLine?.classList.add("is-lit");
 }
 
+async function typewriterLine(text, className = "") {
+  const row = document.createElement("div");
+  row.className = ["output-line", className].filter(Boolean).join(" ");
+  row.textContent = "";
+  const block = document.createElement("div");
+  block.className = "output-block";
+  block.append(row);
+  terminal.output.append(block);
+  scrollToBottom();
+
+  for (const char of text) {
+    row.textContent += char;
+    await wait(28 + Math.random() * 18);
+  }
+  await wait(60);
+}
+
 async function boot() {
   terminal.input.focus();
   syncInput();
-  await printLines(CONTENT.intro);
+
+  // ASCII name banner — draws in letter by letter
+  const banner = [
+    "██╗  ██╗██╗   ██╗███████╗██╗  ██╗",
+    "██║ ██╔╝██║   ██║██╔════╝██║  ██║",
+    "█████╔╝ ██║   ██║███████╗███████║",
+    "██╔═██╗ ██║   ██║╚════██║██╔══██║",
+    "██║  ██╗╚██████╔╝███████║██║  ██║",
+    "╚═╝  ╚═╝ ╚═════╝ ╚══════╝╚═╝  ╚═╝"
+  ];
+
+  const bannerBlock = document.createElement("div");
+  bannerBlock.className = "output-block banner-block";
+  terminal.output.append(bannerBlock);
+
+  for (const line of banner) {
+    const row = document.createElement("div");
+    row.className = "output-line banner-line";
+    row.textContent = line;
+    bannerBlock.append(row);
+    await wait(38);
+    scrollToBottom();
+  }
+
+  await wait(180);
+
+  // Tagline types in character by character
+  await typewriterLine("data science & engineering. nlp. ml systems.", "banner-sub");
+  await wait(120);
+  await typewriterLine("type help", "banner-hint");
+  await wait(80);
 
   const initialCommand = commandFromHash();
   if (initialCommand) await runCommand(initialCommand);

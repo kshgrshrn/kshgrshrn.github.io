@@ -549,3 +549,172 @@ body.is-idle .cursor {
     scroll-behavior: auto !important;
   }
 }
+/* ── Boot banner ───────────────────────────────────── */
+.banner-block {
+  margin-bottom: 18px;
+}
+
+.banner-line {
+  color: var(--accent);
+  font-size: clamp(0.38rem, 1.1vw, 0.56rem);
+  line-height: 1.28;
+  letter-spacing: 0.04em;
+  opacity: 0;
+  animation: line-in 80ms ease forwards;
+}
+
+.banner-sub {
+  color: var(--muted);
+  margin-top: 10px;
+}
+
+.banner-hint {
+  color: var(--dim);
+}
+
+/* ── Skill bars ────────────────────────────────────── */
+.skill-label {
+  color: var(--accent);
+  margin-top: 10px;
+  letter-spacing: 0.06em;
+  font-size: 0.78rem;
+  text-transform: uppercase;
+}
+
+.skill-bar-line {
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+  white-space: pre;
+}
+
+/* ── Experience ────────────────────────────────────── */
+.exp-title {
+  color: var(--text);
+  font-weight: 500;
+  margin-top: 8px;
+}
+
+.exp-period {
+  color: var(--dim);
+  font-size: 0.84rem;
+}
+
+.exp-bullet {
+  color: var(--muted);
+  white-space: pre-wrap;
+}
+
+.exp-sep {
+  color: var(--dim);
+  margin: 10px 0;
+  white-space: pre;
+}
+
+/* ── Awards ────────────────────────────────────────── */
+.award-name {
+  font-weight: 500;
+  transition: color 300ms ease, text-shadow 300ms ease;
+}
+
+.award-flash {
+  color: var(--text);
+  text-shadow:
+    0 0 12px rgba(216, 221, 216, 0.35),
+    0 0 24px rgba(216, 221, 216, 0.15);
+}
+
+.award-settled {
+  color: var(--accent);
+  text-shadow: none;
+}
+
+.award-ctx {
+  color: var(--muted);
+}
+
+.award-detail {
+  color: var(--dim);
+  font-size: 0.88rem;
+}
+
+/* ── Projects box-draw ─────────────────────────────── */
+.project-border {
+  color: var(--dim);
+  white-space: pre;
+  line-height: 1.4;
+}
+
+.project-name-row {
+  color: var(--text);
+  white-space: pre;
+  line-height: 1.6;
+}
+
+.project-name-row strong {
+  color: var(--accent);
+}
+
+.project-summary {
+  color: var(--muted);
+  white-space: pre;
+  line-height: 1.6;
+}
+
+.project-link-row {
+  color: var(--dim);
+  white-space: pre;
+  line-height: 1.6;
+}
+
+/* ── Now: pulse dot ────────────────────────────────── */
+.pulse-dot {
+  color: var(--accent);
+  animation: pulse-glow 1.6s ease-in-out infinite;
+}
+
+.now-clock {
+  color: var(--dim);
+  font-variant-numeric: tabular-nums;
+  margin-top: 6px;
+}
+
+@keyframes pulse-glow {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.2; }
+}
+
+/* ── Scan command ──────────────────────────────────── */
+.scan-line {
+  white-space: pre;
+  color: var(--muted);
+}
+
+.scan-ok {
+  color: var(--accent);
+}
+
+.scan-fail {
+  color: var(--dim);
+}
+
+/* ── Glitch effect ─────────────────────────────────── */
+body.is-glitching .terminal-output {
+  animation: body-glitch 120ms steps(2, end) infinite;
+}
+
+@keyframes body-glitch {
+  0%   { transform: translate(0); filter: none; }
+  20%  { transform: translate(-3px, 1px); filter: hue-rotate(40deg); }
+  40%  { transform: translate(3px, -2px); filter: hue-rotate(-40deg) brightness(1.3); }
+  60%  { transform: translate(-2px, 2px); filter: hue-rotate(20deg); }
+  80%  { transform: translate(2px, -1px); filter: hue-rotate(-20deg); }
+  100% { transform: translate(0); filter: none; }
+}
+
+/* ── Responsive: tighten banner on mobile ──────────── */
+@media (max-width: 620px) {
+  .banner-line {
+    font-size: 0.28rem;
+    letter-spacing: 0.02em;
+  }
+}
