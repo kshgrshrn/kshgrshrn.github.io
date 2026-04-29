@@ -2,31 +2,33 @@ const PROMPT = "kushagra@node:~ $";
 
 const PROJECTS = [
   {
-    name: "semantic-gst-schema-standardization-engine",
-    summary: "embedding-based tax schema mapping system",
+    name: "semantic-nlp-system",
+    summary: "embedding-based semantic data standardization",
     href: "https://github.com/kshgrshrn/Semantic-GST-Schema-Standardization-Engine"
   }
 ];
 
 const CONTENT = {
   intro: [
-    "Kushagra Sharan",
-    "type 'help'"
+    "node: kushagra.sharan",
+    "type help"
   ],
   about: [
-    "B.Tech Data Science & Engineering, MIT Manipal. Graduating 2028.",
-    "NLP systems, financial ML, interpretability research, physics."
+    "Data Science & Engineering @ MIT Manipal.",
+    "Direction: interpretability, alignment, ML systems, physics.",
+    "Work: semantic systems for noisy structured data."
+  ],
+  now: [
+    "building: ML systems",
+    "studying: interpretability / safety",
+    "thinking: physics as compression"
   ],
   writing: [
     "No published writing."
   ],
-  now: [
-    "No current update provided.",
-    "Last local note: April 2025."
-  ],
   links: [
-    `<a href="https://github.com/kshgrshrn" target="_blank" rel="noreferrer">github.com/kshgrshrn</a>`,
-    `<a href="https://www.linkedin.com/in/kushagrasharan/" target="_blank" rel="noreferrer">linkedin.com/in/kushagrasharan</a>`
+    `<a href="https://github.com/kshgrshrn" target="_blank" rel="noreferrer">github</a>`,
+    `<a href="https://www.linkedin.com/in/kushagrasharan/" target="_blank" rel="noreferrer">linkedin</a>`
   ]
 };
 
@@ -44,31 +46,31 @@ let cursorActivityTimer;
 
 const COMMANDS = {
   help: {
-    description: "list commands",
-    run: () => commandList()
+    description: "commands",
+    run: () => Object.keys(COMMANDS)
   },
   about: {
-    description: "identity",
-    run: () => [...CONTENT.about, "", ...CONTENT.links]
+    description: "direction",
+    run: () => CONTENT.about
   },
   projects: {
-    description: "selected work",
+    description: "work",
     run: () => projectList()
   },
-  writing: {
-    description: "published notes",
-    run: () => CONTENT.writing
-  },
   now: {
-    description: "current state",
+    description: "current",
     run: () => CONTENT.now
   },
+  writing: {
+    description: "notes",
+    run: () => CONTENT.writing
+  },
   links: {
-    description: "external links",
+    description: "external",
     run: () => CONTENT.links
   },
   clear: {
-    description: "clear terminal",
+    description: "reset",
     run: () => {
       terminal.output.replaceChildren();
       return [];
@@ -76,18 +78,12 @@ const COMMANDS = {
   }
 };
 
-function commandList() {
-  return Object.entries(COMMANDS).map(([name, command]) => {
-    return `${name.padEnd(9, " ")}${command.description}`;
-  });
-}
-
 function projectList() {
   if (!PROJECTS.length) return ["No projects listed."];
 
   return PROJECTS.flatMap((project) => [
     `<strong>${project.name}</strong> - ${project.summary}`,
-    `  <a href="${project.href}" target="_blank" rel="noreferrer">view &rarr;</a>`
+    `  <a href="${project.href}" target="_blank" rel="noreferrer">view -></a>`
   ]);
 }
 
@@ -119,11 +115,17 @@ async function printLines(lines, className = "") {
   block.className = "output-block";
   terminal.output.append(block);
 
-  for (const line of lines) {
+  for (const [index, line] of lines.entries()) {
     block.append(appendOutputLine(line, className));
     scrollToBottom();
-    await wait(46);
+    await wait(outputDelay(index, line));
   }
+}
+
+function outputDelay(index, line) {
+  const lengthBias = Math.min(line.length, 72) * 0.35;
+  const phase = (index % 3) * 9;
+  return 34 + lengthBias + phase;
 }
 
 async function runCommand(rawCommand, options = {}) {
@@ -137,7 +139,7 @@ async function runCommand(rawCommand, options = {}) {
 
   const entry = COMMANDS[command];
   if (!entry) {
-    await printLines([`command not found: ${escapeHtml(command)}`, "type 'help'"], "error");
+    await printLines([`command not found: ${escapeHtml(command)}`, "type help"], "error");
   } else {
     const lines = entry.run();
     if (lines.length) await printLines(lines);
@@ -152,6 +154,7 @@ function pushHistory(command) {
   if (terminal.history.at(-1) !== command) {
     terminal.history.push(command);
   }
+
   terminal.historyIndex = terminal.history.length;
 }
 
@@ -216,9 +219,7 @@ terminal.form.addEventListener("submit", (event) => {
 });
 
 terminal.input.addEventListener("input", syncInput);
-
 terminal.input.addEventListener("focus", placeCaretAtEnd);
-
 terminal.input.addEventListener("click", placeCaretAtEnd);
 
 terminal.input.addEventListener("keydown", (event) => {
@@ -243,25 +244,6 @@ document.addEventListener("click", (event) => {
   if (!event.target.closest("a")) terminal.input.focus();
 });
 
-function scheduleGlitch() {
-  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-
-  const delay = 14000 + Math.random() * 22000;
-  window.setTimeout(() => {
-    const lines = [...document.querySelectorAll(".output-line")].filter((line) => {
-      return !line.querySelector("a");
-    });
-    const line = lines[Math.floor(Math.random() * lines.length)];
-
-    if (line) {
-      line.classList.add("glitch");
-      window.setTimeout(() => line.classList.remove("glitch"), 120);
-    }
-
-    scheduleGlitch();
-  }, delay);
-}
-
 async function boot() {
   terminal.input.focus();
   syncInput();
@@ -272,4 +254,3 @@ async function boot() {
 }
 
 boot();
-scheduleGlitch();

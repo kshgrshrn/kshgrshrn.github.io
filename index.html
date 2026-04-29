@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Kushagra Sharan. Personal terminal environment.">
+  <meta name="description" content="Kushagra Sharan. Personal terminal interface.">
   <title>Kushagra Sharan</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -11,38 +11,26 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <main class="page-shell">
-    <section class="terminal-window" aria-label="Kushagra Sharan terminal">
-      <header class="terminal-header" aria-hidden="true">
-        <div class="window-controls">
-          <span class="control close"></span>
-          <span class="control minimize"></span>
-          <span class="control maximize"></span>
-        </div>
-      </header>
+  <main class="terminal" aria-label="Kushagra Sharan terminal">
+    <div id="terminal-output" class="terminal-output" aria-live="polite"></div>
 
-      <div class="terminal-body">
-        <div id="terminal-output" class="terminal-output" aria-live="polite"></div>
-
-        <form id="terminal-form" class="input-row" autocomplete="off">
-          <label for="terminal-input" class="prompt">kushagra@node:~ $</label>
-          <div class="input-field">
-            <span id="input-mirror" class="input-mirror" aria-hidden="true"></span>
-            <span class="cursor" aria-hidden="true"></span>
-            <input
-              id="terminal-input"
-              class="terminal-input"
-              name="command"
-              type="text"
-              spellcheck="false"
-              autocapitalize="none"
-              autocomplete="off"
-              aria-label="Terminal command"
-            >
-          </div>
-        </form>
-      </div>
-    </section>
+    <form id="terminal-form" class="input-row" autocomplete="off">
+      <label for="terminal-input" class="prompt">kushagra@node:~ $</label>
+      <span class="input-field">
+        <span id="input-mirror" class="input-mirror" aria-hidden="true"></span>
+        <span class="cursor" aria-hidden="true"></span>
+        <input
+          id="terminal-input"
+          class="terminal-input"
+          name="command"
+          type="text"
+          spellcheck="false"
+          autocapitalize="none"
+          autocomplete="off"
+          aria-label="Terminal command"
+        >
+      </span>
+    </form>
   </main>
 
   <script src="script.js" defer></script>
