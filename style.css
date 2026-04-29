@@ -1,6 +1,11 @@
 *, *::before, *::after {
   box-sizing: border-box;
-  cursor: none !important;
+}
+
+@media (pointer: fine) {
+  *, *::before, *::after {
+    cursor: none !important;
+  }
 }
 
 :root {
@@ -185,6 +190,24 @@ input {
   transition: transform 260ms ease-out;
 }
 
+body.matrix-mode {
+  --bg: #000;
+  --text: #0f0;
+  --muted: #008f11;
+  --dim: #003b00;
+  --prompt: #00ff41;
+  --accent: #20c20e;
+  --error: #ff0000;
+  --selection: rgba(0, 255, 65, 0.3);
+}
+
+body.matrix-mode::after {
+  background: 
+    linear-gradient(rgba(0, 255, 65, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 255, 65, 0.05) 1px, transparent 1px);
+  opacity: 0.8;
+}
+
 .terminal-output {
   flex: 1 1 auto;
   min-height: 0;
@@ -255,6 +278,7 @@ input {
   color: var(--accent);
   text-decoration: none;
   border-bottom: 1px solid rgba(182, 192, 180, 0.24);
+  position: relative;
   transition: color 150ms ease, border-color 150ms ease, text-shadow 150ms ease;
 }
 
@@ -264,13 +288,27 @@ input {
   border-color: rgba(216, 221, 216, 0.36);
   text-shadow:
     0 0 7px rgba(182, 192, 180, 0.1),
-    0.25px 0 rgba(188, 157, 157, 0.08),
-    -0.25px 0 rgba(169, 179, 170, 0.08);
+    2px 0 rgba(255, 0, 0, 0.5),
+    -2px 0 rgba(0, 255, 255, 0.5);
+  animation: glitch-hover 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94) both infinite;
   outline: 0;
+}
+
+@keyframes glitch-hover {
+  0% { transform: translate(0); text-shadow: 2px 0 rgba(255, 0, 0, 0.5), -2px 0 rgba(0, 255, 255, 0.5); }
+  20% { transform: translate(-1px, 1px); text-shadow: -2px 0 rgba(255, 0, 0, 0.4), 2px 0 rgba(0, 255, 255, 0.4); }
+  40% { transform: translate(-1px, -1px); text-shadow: 2px 0 rgba(255, 0, 0, 0.5), -2px 0 rgba(0, 255, 255, 0.5); }
+  60% { transform: translate(1px, 1px); text-shadow: -2px 0 rgba(255, 0, 0, 0.4), 2px 0 rgba(0, 255, 255, 0.4); }
+  80% { transform: translate(1px, -1px); text-shadow: 2px 0 rgba(255, 0, 0, 0.5), -2px 0 rgba(0, 255, 255, 0.5); }
+  100% { transform: translate(0); text-shadow: -2px 0 rgba(255, 0, 0, 0.4), 2px 0 rgba(0, 255, 255, 0.4); }
 }
 
 .output-line.error {
   color: var(--error);
+}
+
+.output-line.ai-response {
+  color: var(--accent);
 }
 
 .output-line.idle-line {
@@ -417,13 +455,26 @@ body.is-idle .cursor {
 
   .line,
   .input-row {
-    gap: 8px;
+    gap: 0;
+    flex-direction: column;
+    align-items: flex-start;
+    margin-bottom: 12px;
   }
 
   .prompt {
-    max-width: 54vw;
-    overflow: hidden;
-    text-overflow: clip;
+    width: 100%;
+    margin-bottom: 4px;
+  }
+
+  .command-text,
+  .input-mirror {
+    white-space: pre-wrap;
+    word-break: break-all;
+  }
+
+  .input-field {
+    width: 100%;
+    padding-left: 8px;
   }
 }
 

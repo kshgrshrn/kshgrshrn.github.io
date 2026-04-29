@@ -3,56 +3,66 @@ const PROMPT = "kushagra@node:~ $";
 const PROJECTS = [
   {
     name: "semantic-nlp-system",
-    summary: "embedding-based semantic data standardization",
+    summary: "AI-powered NLP pipeline standardizing messy GST datasets w/ embeddings (EY Internship)",
     href: "https://github.com/kshgrshrn/Semantic-GST-Schema-Standardization-Engine"
   }
 ];
 
 const CONTENT = {
   intro: [
-    "node: kushagra.sharan",
+    "Loading standard terminal.......... OK",
+    "Connection established.",
     "type help"
   ],
   about: [
-    "     /\\",
-    "    /  \\",
-    "   /____\\",
+    "Kushagra Sharan",
+    "B.Tech Data Science & Engineering @ MIT Manipal (2028).",
+    "Previously: AI Intern @ Ernst & Young (EY), Gurugram.",
     "",
-    "Data Science & Engineering @ MIT Manipal.",
-    "Direction: interpretability, alignment, ML systems, physics.",
-    "Work: semantic systems for noisy structured data.",
+    "Interests: NLP Pipelines, Financial ML, ML Systems, AI Safety,",
+    "           and Mechanistic Interpretability.",
     "",
+    `email    -> <a href="mailto:kushagrasharan2006@gmail.com">kushagrasharan2006@gmail.com</a>`,
     `github   -> <a href="https://github.com/kshgrshrn" target="_blank" rel="noreferrer">https://github.com/kshgrshrn</a>`,
     `linkedin -> <a href="https://www.linkedin.com/in/kushagrasharan/" target="_blank" rel="noreferrer">https://www.linkedin.com/in/kushagrasharan/</a>`
   ],
   now: [
-    "building: ML systems",
-    "studying: interpretability / safety",
-    "thinking: physics as compression"
+    "building: scalable NLP pipelines & ML systems",
+    "studying: Data Science @ MIT Manipal",
+    "exploring: Interpretability & AI Safety alignment"
+  ],
+  experience: [
+    "=== PROFESSIONAL EXPERIENCE ===",
+    "",
+    "Ernst & Young (EY) | Gurugram",
+    "Role: AI Intern",
+    "Contributions:",
+    " - Built an AI-powered NLP pipeline to standardize messy GST datasets.",
+    " - Implemented semantic embeddings to map raw data into a unified 61-field schema.",
+    " - Automated tax data ingestion across inconsistent inputs."
   ],
   writing: [
     "No published writing."
   ],
   links: [
+    `<a href="mailto:kushagrasharan2006@gmail.com">email</a>`,
     `<a href="https://github.com/kshgrshrn" target="_blank" rel="noreferrer">github</a>`,
     `<a href="https://www.linkedin.com/in/kushagrasharan/" target="_blank" rel="noreferrer">linkedin</a>`
   ],
   hidden: {
     why: [
-      "for the love of it all.",
-      "to strive for a better life."
+      "because I can."
     ],
     trace: [
-      () => `trace: ${timeBand()} / local`,
-      "signal retained. context compressed."
+      () => `trace route to local host node`
     ],
     axiom: [
-      "learn. ask. furnish. build.",
+      "learn. build. iterate."
     ]
   },
   aboutAfterRepeat: [
-    "Same node. Lower verbosity.",
-    "Life, Humanities, Sciences, Tech.",
+    "Data Science & Engineering @ MIT Manipal.",
+    "Engineering & Data Science.",
     "",
     `github   -> <a href="https://github.com/kshgrshrn" target="_blank" rel="noreferrer">https://github.com/kshgrshrn</a>`,
     `linkedin -> <a href="https://www.linkedin.com/in/kushagrasharan/" target="_blank" rel="noreferrer">https://www.linkedin.com/in/kushagrasharan/</a>`
@@ -98,6 +108,28 @@ const COMMANDS = {
     pace: "quick",
     run: () => visibleCommands()
   },
+  sudo: {
+    hidden: true,
+    run: () => ["node is not in the sudoers file. This incident will be reported."]
+  },
+  sound: {
+    description: "toggle sounds",
+    pace: "quick",
+    run: () => {
+      document.body.classList.toggle("mute-mode");
+      playKeystroke();
+      const isMuted = document.body.classList.contains("mute-mode");
+      if (isMuted) return ["Terminal sounds muted."];
+      return ["Terminal sounds enabled."];
+    }
+  },
+  matrix: {
+    hidden: true,
+    run: () => {
+      document.body.classList.toggle("matrix-mode");
+      return document.body.classList.contains("matrix-mode") ? ["matrix protocol initialized.", "enjoy the aesthetic..."] : ["matrix protocol terminated."];
+    }
+  },
   about: {
     description: "direction",
     pace: "slow",
@@ -108,6 +140,26 @@ const COMMANDS = {
     description: "work",
     pace: "structured",
     run: () => projectList()
+  },
+  experience: {
+    description: "resume",
+    pace: "measured",
+    run: () => CONTENT.experience
+  },
+  kfetch: {
+    description: "sysinfo",
+    pace: "quick",
+    run: () => [
+      "          \\    /       <strong style='color: var(--accent)'>kushagra@node</strong>",
+      "           \\  /        -------------",
+      "            \\/         <strong>Course</strong>: B.Tech Data Science & Eng (2028)",
+      "     -------|-------    <strong>College</strong>: MIT Manipal",
+      "            |           <strong>Previous Experience</strong>: AI Intern @ Ernst & Young",
+      "           / \\         <strong>Uptime</strong>: ~19 years",
+      "          /   \\        <strong>Theme</strong>: Minimal Terminal Dark",
+      "         /     \\       ",
+      ""
+    ]
   },
   now: {
     description: "current",
@@ -303,7 +355,36 @@ async function executeCommand(command) {
   const entry = COMMANDS[command];
 
   if (!entry) {
-    await printLines(invalidResponse(command), "error");
+    const isSpecialCase = command.includes(" ") || command.includes("&&") || command.length <= 2;
+    const nearest = nearestCommand(command);
+    
+    if (isSpecialCase || nearest.distance <= 2) {
+      await printLines(invalidResponse(command), "error");
+      return;
+    }
+
+    await printLines([`analyzing input anomalous signature...`], { className: "idle-line", pace: "quick" });
+
+    try {
+      const workerUrl = "https://kushagra-terminal-ai.kushagrasharan2006.workers.dev";
+      
+      const response = await fetch(workerUrl, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ command }),
+      });
+      
+      if (!response.ok) throw new Error("API Network Error");
+      
+      const data = await response.json();
+      if (data.error) throw new Error(data.error);
+
+      const aiLines = data.response.split("\n").map(l => l.trim()).filter(Boolean);
+      await printLines(aiLines, { className: "ai-response", pace: "measured" });
+    } catch (e) {
+      await printLines(invalidResponse(command), "error");
+    }
+    
     return;
   }
 
@@ -491,15 +572,32 @@ function commandFromHash() {
   return COMMANDS[hash] ? hash : "";
 }
 
+const keyClackAudio = new Audio('data:audio/mp3;base64,UklGRmYBAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YUMBAAAHAQwAGgA7AEkAWAByAIMAnACqAAMAEwAhADMAOQA9AEkATABXAF4AbQBrAHUAcwBaADMACQABABIAEgAeABoAIQAwADcANwA0AEMAQQAyADEAMAAtACYAJAAXABIAAADe/9z/5v/s/+b/4//V/9X/0f/E/8j/0v/U/9L/tf+l/6z/s/+x/7T/rP+n/6X/r/+1/LMAAA==');
+keyClackAudio.volume = 0.05;
+
+function playKeystroke() {
+  if (!document.body.classList.contains("mute-mode")) {
+    keyClackAudio.currentTime = 0;
+    keyClackAudio.play().catch(() => {});
+  }
+}
+
 terminal.form.addEventListener("submit", (event) => {
   event.preventDefault();
   const command = terminal.input.value;
   terminal.input.value = "";
+  
+  playKeystroke();
+  if (navigator.vibrate) navigator.vibrate(15);
+  
   syncInput();
   runCommand(command);
 });
 
-terminal.input.addEventListener("input", syncInput);
+terminal.input.addEventListener("input", () => {
+    playKeystroke();
+    syncInput();
+});
 terminal.input.addEventListener("focus", placeCaretAtEnd);
 terminal.input.addEventListener("click", placeCaretAtEnd);
 
@@ -518,6 +616,29 @@ terminal.input.addEventListener("keydown", (event) => {
   if (event.key === "ArrowDown") {
     event.preventDefault();
     recallHistory(1);
+  }
+});
+
+let touchStartX = 0;
+let touchStartY = 0;
+
+document.addEventListener("touchstart", (e) => {
+  if (e.touches.length === 1) {
+    touchStartX = e.touches[0].clientX;
+    touchStartY = e.touches[0].clientY;
+  }
+}, { passive: true });
+
+document.addEventListener("touchend", (e) => {
+  if (e.changedTouches.length === 1) {
+    const deltaX = e.changedTouches[0].clientX - touchStartX;
+    const deltaY = e.changedTouches[0].clientY - touchStartY;
+    
+    // Only command swipe history if the delta primarily horizontal
+    if (Math.abs(deltaX) > 40 && Math.abs(deltaX) > Math.abs(deltaY) * 1.5) {
+      if (deltaX > 0) recallHistory(1); // Swipe right = newer command
+      else recallHistory(-1); // Swipe left = older command
+    }
   }
 });
 
@@ -634,6 +755,35 @@ window.addEventListener("pointermove", (event) => {
     root.setProperty("--light-y", `${pointerY}px`);
 
     updateLightResponse(pointerX, pointerY);
+    terminal.parallaxFrame = null;
+  });
+});
+
+window.addEventListener("deviceorientation", (event) => {
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  if (!event.beta || !event.gamma) return;
+  
+  if (terminal.parallaxFrame) return;
+  
+  terminal.parallaxFrame = window.requestAnimationFrame(() => {
+    // limit pitch and roll to a comfy [-45, 45] degree arc
+    const maxTilt = 45;
+    const beta = Math.max(-maxTilt, Math.min(maxTilt, event.beta));
+    const gamma = Math.max(-maxTilt, Math.min(maxTilt, event.gamma || 0));
+
+    // normalize bounded orientation to a familiar pointer space [-0.5, 0.5]
+    const normalizedY = beta / (maxTilt * 2);
+    const normalizedX = gamma / (maxTilt * 2);
+
+    const root = document.documentElement.style;
+
+    root.setProperty("--depth-x", `${(normalizedX * 1.4).toFixed(2)}px`);
+    root.setProperty("--depth-y", `${(normalizedY * 1.1).toFixed(2)}px`);
+    root.setProperty("--plane-x", `${(normalizedX * -2.4).toFixed(2)}px`);
+    root.setProperty("--plane-y", `${(normalizedY * -1.8).toFixed(2)}px`);
+    root.setProperty("--cursor-depth-x", `${(normalizedX * 0.5).toFixed(2)}px`);
+    root.setProperty("--cursor-depth-y", `${(normalizedY * 0.35).toFixed(2)}px`);
+    
     terminal.parallaxFrame = null;
   });
 });
