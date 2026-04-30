@@ -2146,7 +2146,7 @@ async function boot() {
   // Phase 3: available status badge
   const statusRow = document.createElement("div");
   statusRow.className = "output-line boot-status";
-  statusRow.innerHTML = '<span class="status-dot"></span> open to opportunities &nbsp;·&nbsp; <span style="color:var(--dim)">type <span style="color:var(--accent)">help</span> or <span style="color:var(--accent)">neofetch</span></span>';
+  statusRow.innerHTML = '<span class="status-dot"></span> open to opportunities &nbsp;·&nbsp; <span style="color:var(--dim)">type <span style="color:var(--accent)">help</span> or <span style="color:var(--accent)">talk to the ai chatbot</span></span>';
   const statusBlock = document.createElement("div");
   statusBlock.className = "output-block";
   statusBlock.append(statusRow);
