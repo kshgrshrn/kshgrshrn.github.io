@@ -794,10 +794,10 @@ const COMMANDS = {
       const sections = [
         { heading: "NAME", body: "  kushagra-sharan — builder of ML systems, occasional team lead" },
         { heading: "SYNOPSIS", body: "  kushagra [--intern] [--researcher] [--open-to-work]" },
-        { heading: "DESCRIPTION", body: `  Kushagra is a B.Tech Data Science & Engineering student at MIT Manipal
-  with production ML experience at Ernst & Young. Specializes in NLP
-  pipelines and financial ML systems. Has led 50+ person international
-  teams (NASA SSDC). Currently in semester 3 of 8.` },
+        { heading: "DESCRIPTION", body: `  I am a B.Tech Data Science & Engineering student at MIT Manipal
+  with production ML experience at Ernst & Young. Specializing in NLP
+  pipelines and financial ML systems. Have led 50+ person international
+  teams (NASA SSDC). Currently in semester 4 of 8.` },
         { heading: "OPTIONS", body: `  --intern        available for internships
   --collaborate   open to research projects
   --hire          see contact` },
@@ -1198,14 +1198,14 @@ async function runCommandChain(commandText) {
 
 async function runGitLog() {
   const commits = [
-    { hash: "a9f3d12", refs: "(HEAD → main)", date: "Apr 2025",  msg: "feat: ai internship at ernst & young, gurugram" },
-    { hash: "7c2e891", refs: "",              date: "Apr 2025",  msg: "build: semantic GST schema standardization engine" },
+    { hash: "a9f3d12", refs: "(HEAD → main)", date: "Aug 2025",  msg: "feat: ai internship at ernst & young, gurugram" },
+    { hash: "7c2e891", refs: "",              date: "Apr 2025",  msg: "hack: OSINT competition runner-up" },
     { hash: "3b8f044", refs: "",              date: "Mar 2025",  msg: "perf: +8.1% cosine similarity, 35% faster inference" },
-    { hash: "f1d9a57", refs: "",              date: "Jan 2025",  msg: "init: semester 3 — DBMS, OS, ML, OOP" },
+    { hash: "f1d9a57", refs: "",              date: "Jan 2025",  msg: "init: semester 3 — Computer Networks, Digital Systems, Computer Organization, Data Structures" },
     { hash: "22c7b3e", refs: "",              date: "Aug 2024",  msg: "feat: data analyst intern at graceland asset mgmt" },
     { hash: "9e4a188", refs: "",              date: "Jul 2024",  msg: "init: b.tech data science & engineering, mit manipal" },
-    { hash: "d04f9c1", refs: "",              date: "Mar 2023",  msg: "award: nasa ssdc — dick edwards exceptional leadership" },
-    { hash: "88b2e73", refs: "",              date: "2023",      msg: "lead: 50+ person international team, nasa ssdc" },
+    { hash: "d04f9c1", refs: "",              date: "Jul 2023",  msg: "lead: 50+ person international team, nasa ssdc" },
+    { hash: "88b2e73", refs: "",              date: "Mar 20233", msg: "award: nasa ssdc — dick edwards exceptional leadership" },
     { hash: "c1a0044", refs: "",              date: "2022",      msg: "init: national winner, asian regional runner-up" },
   ];
 
@@ -1243,7 +1243,27 @@ async function runGitLog() {
 
 function extractAiReply(data) {
   if (!data || typeof data !== "object") return "";
-  const s = data.response ?? data.reply ?? data.text ?? data.message ?? data.output;
+
+  // prefer explicit top-level `response` or common fields
+  let s = data.response ?? data.reply ?? data.text ?? data.message ?? data.output;
+
+  // If the Worker wraps provider result under `raw`, try extracting from there too
+  if (!s && data.raw && typeof data.raw === "object") {
+    const r = data.raw;
+    s = r.response ?? r.reply ?? r.text ?? r.message ?? r.output ?? r.result ?? r.data;
+
+    // some providers put content under outputs[0].content or outputs[0].text
+    if (!s && Array.isArray(r.outputs) && r.outputs.length) {
+      const first = r.outputs[0];
+      s = typeof first === "string" ? first : first.content ?? first.text ?? JSON.stringify(first);
+    }
+
+    // provider `output` may be an array
+    if (!s && Array.isArray(r.output) && r.output.length) {
+      s = r.output.map(x => (typeof x === "string" ? x : JSON.stringify(x))).join("\n");
+    }
+  }
+
   return typeof s === "string" ? s : "";
 }
 
@@ -1324,7 +1344,7 @@ async function executeCommand(command) {
     };
 
     try {
-      const workerUrl = "https://kushagra-terminal-ai.kushagrasharan2006.workers.dev";
+      const workerUrl = "https://chat.kushagrasharan.me";
 
       const response = await fetch(workerUrl, {
         method: "POST",
@@ -1835,11 +1855,11 @@ function initHud() {
     "ai safety / alignment",
     "nlp systems",
     "financial ml",
-    "physics as compression"
+    "astrophysics"
   ];
   const subs = [
     "open to research collab",
-    "seeking summer '25 internship",
+    "seeking summer '26 internship",
     "mit manipal · dse · y2"
   ];
 
