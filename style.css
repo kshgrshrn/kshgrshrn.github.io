@@ -136,7 +136,6 @@ input {
   transition:
     width 110ms ease,
     height 110ms ease,
-    transform 110ms ease,
     opacity 160ms ease,
     background-color 120ms ease,
     box-shadow 140ms ease;
