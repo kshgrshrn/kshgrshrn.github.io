@@ -166,25 +166,11 @@ const CONTENT = {
     "   exploratory analysis for internal benchmarking",
     " - produced summary reports adopted for operational evaluation"
   ],
-  writing: [
-    "No published writing."
-  ],
   links: [
     `<a href="mailto:kushagrasharan2006@gmail.com">email</a>`,
     `<a href="https://github.com/kshgrshrn" target="_blank" rel="noreferrer">github</a>`,
     `<a href="https://www.linkedin.com/in/kushagrasharan/" target="_blank" rel="noreferrer">linkedin</a>`
   ],
-  hidden: {
-    why: [
-      "because I can."
-    ],
-    trace: [
-      () => `trace route to local host node`
-    ],
-    axiom: [
-      "learn. build. iterate."
-    ]
-  },
   aboutAfterRepeat: [
     "the longer answer:",
     "",
@@ -245,7 +231,7 @@ const COMMANDS = {
     run: () => {
       const categories = {
         "CORE": ["about", "experience", "projects", "skills", "awards", "resume"],
-        "EXPLORE": ["now", "status", "neofetch", "links", "contact", "education", "theme"],
+        "EXPLORE": ["git log", "now", "status", "neofetch", "links", "contact", "education", "theme"],
         "UTILS": ["clear", "help"],
       };
 
@@ -261,20 +247,13 @@ const COMMANDS = {
       }
       lines.push("");
       lines.push("  hint: Tab → autocomplete   ? → shortcuts   && → chain");
-      lines.push("  hint: try git log, man, neofetch, ssh, vim, find ...");
+      lines.push("  hint: try git log, status, neofetch, contact ...");
       return lines;
     }
   },
   sudo: {
     hidden: true,
     run: () => ["root access denied."]
-  },
-  matrix: {
-    hidden: true,
-    run: () => {
-      document.body.classList.toggle("matrix-mode");
-      return document.body.classList.contains("matrix-mode") ? ["matrix protocol initialized.", "enjoy the aesthetic..."] : ["matrix protocol terminated."];
-    }
   },
   about: {
     description: " -- about me",
@@ -444,11 +423,6 @@ const COMMANDS = {
       return [];
     }
   },
-  writing: {
-    hidden: true,
-    pace: "quick",
-    run: () => CONTENT.writing
-  },
   links: {
     description: " -- work/social",
     pace: "quick",
@@ -606,29 +580,6 @@ const COMMANDS = {
       return [];
     }
   },
-  why: {
-    hidden: true,
-    pace: "slow",
-    run: () => CONTENT.hidden.why
-  },
-  trace: {
-    hidden: true,
-    pace: "quick",
-    run: () => resolveLines(CONTENT.hidden.trace)
-  },
-  axiom: {
-    hidden: true,
-    pace: "slow",
-    run: () => CONTENT.hidden.axiom
-  },
-  layer: {
-    hidden: true,
-    pace: "measured",
-    run: () => [
-      "surface: command",
-      "depth: interpretation"
-    ]
-  },
   whoami: {
     hidden: true,
     pace: "quick",
@@ -664,73 +615,6 @@ const COMMANDS = {
       const next = THEMES[themeIndex];
       if (next !== "default") document.body.classList.add(`theme-${next}`);
       return [`theme: ${next}`];
-    }
-  }
-  ,
-  scan: {
-    hidden: true,
-    run: async () => {
-      const checks = [
-        { label: "identity module",     ok: true  },
-        { label: "nlp pipeline",        ok: true  },
-        { label: "pretrained weights",  ok: true  },
-        { label: "ego",                 ok: false },
-        { label: "imposter syndrome",   ok: false },
-        { label: "coffee dependency",   ok: true  },
-        { label: "stack overflow cache",ok: true  },
-      ];
-
-      const block = document.createElement("div");
-      block.className = "output-block";
-      terminal.output.append(block);
-
-      const header = document.createElement("div");
-      header.className = "output-line";
-      header.textContent = "running system diagnostic...";
-      block.append(header);
-      scrollToBottom();
-      await wait(300);
-
-      for (const check of checks) {
-        const row = document.createElement("div");
-        row.className = "output-line scan-line";
-        block.append(row);
-        scrollToBottom();
-
-        for (let i = 0; i < 3; i++) {
-          row.textContent = `  checking ${check.label}${"·".repeat(i + 1)}`;
-          await wait(130);
-        }
-
-        const status = check.ok ? "[ OK ]" : "[ -- ]";
-        const cls    = check.ok ? "scan-ok" : "scan-fail";
-        row.textContent = "";
-        const label = document.createElement("span");
-        label.textContent = `  ${check.label.padEnd(30)}`;
-        const badge = document.createElement("span");
-        badge.className = cls;
-        badge.textContent = status;
-        row.append(label, badge);
-        await wait(80);
-      }
-
-      await wait(200);
-      const done = document.createElement("div");
-      done.className = "output-line";
-      done.textContent = "diagnostic complete. mostly functional.";
-      block.append(done);
-      scrollToBottom();
-
-      return [];
-    }
-  },
-  glitch: {
-    hidden: true,
-    run: async () => {
-      document.body.classList.add("is-glitching");
-      await wait(2000);
-      document.body.classList.remove("is-glitching");
-      return ["signal restored."];
     }
   },
   contact: {
@@ -865,19 +749,11 @@ const COMMANDS = {
   },
 
   "git log": {
-    hidden: true,
+    description: " -- career timeline graph",
     pace: "measured",
     run: async () => {
-      // Intercept "git log" as a full phrase in executeCommand — see Section 4.
+      // Intercepted as a phrase command in executeCommand.
       return [];
-    }
-  },
-
-  ls: {
-    hidden: true,
-    run: async ({ count }) => {
-      // Alias to help
-      return COMMANDS.help.run({ count });
     }
   },
 
@@ -933,31 +809,6 @@ const COMMANDS = {
       "Permission denied (publickey).",
       "",
       "→ try: contact"
-    ]
-  },
-
-  vim: {
-    hidden: true,
-    pace: "quick",
-    run: () => ["there is no escape. (hint: :q!)"]
-  },
-
-  nano: {
-    hidden: true,
-    pace: "quick",
-    run: () => ["you're not a nano person. use the terminal."]
-  },
-
-  grep: {
-    hidden: true,
-    pace: "measured",
-    run: () => [
-      "grep: pattern required.",
-      "",
-      `try: grep -r "passion" ./kushagra`,
-      "→    ./kushagra/core.py:  passion = [\"NLP\", \"ML systems\", \"physics\"]",
-      "→    ./kushagra/core.py:  passion += [\"interpretability\", \"building\"]",
-      "→    ./kushagra/README:   See passion for primary motivation.",
     ]
   },
 
@@ -1308,48 +1159,213 @@ async function runCommandChain(commandText) {
 }
 
 async function runGitLog() {
-  const commits = [
-    { hash: "a9f3d12", refs: "(HEAD → main)", date: "Aug 2025",  msg: "feat: ai internship at ernst & young, gurugram" },
-    { hash: "7c2e891", refs: "",              date: "Apr 2025",  msg: "hack: OSINT competition runner-up" },
-    { hash: "3b8f044", refs: "",              date: "Mar 2025",  msg: "perf: +8.1% cosine similarity, 35% faster inference" },
-    { hash: "f1d9a57", refs: "",              date: "Jan 2025",  msg: "init: semester 3 — Computer Networks, Digital Systems, Computer Organization, Data Structures" },
-    { hash: "22c7b3e", refs: "",              date: "Aug 2024",  msg: "feat: data analyst intern at graceland asset mgmt" },
-    { hash: "9e4a188", refs: "",              date: "Jul 2024",  msg: "init: b.tech data science & engineering, mit manipal" },
-    { hash: "d04f9c1", refs: "",              date: "Jul 2023",  msg: "lead: 50+ person international team, nasa ssdc" },
-    { hash: "88b2e73", refs: "",              date: "Mar 20233", msg: "award: nasa ssdc — dick edwards exceptional leadership" },
-    { hash: "c1a0044", refs: "",              date: "2022",      msg: "init: national winner, asian regional runner-up" },
-  ];
-
   const block = document.createElement("div");
   block.className = "output-block";
   terminal.output.append(block);
 
-  for (const c of commits) {
+  const appendGraphChar = (row, char) => {
+    const span = document.createElement("span");
+    span.textContent = char;
+    if (char === "*") {
+      span.className = "gitlog-node";
+    } else if (char === "|" || char === "\\" || char === "/") {
+      span.className = "gitlog-branch";
+    } else {
+      span.className = "gitlog-space";
+    }
+    row.append(span);
+  };
+
+  const typeGraph = async (row, graph) => {
+    for (const char of graph) {
+      appendGraphChar(row, char);
+      scrollToBottom();
+      await wait(20);
+    }
+  };
+
+  const typeCommit = async ({ graph, hash, refs, type, message, head }) => {
     const row = document.createElement("div");
-    row.className = "output-line";
-    row.style.whiteSpace = "pre";
-
-    const hash = document.createElement("span");
-    hash.className = "gitlog-hash";
-    hash.textContent = c.hash + " ";
-
-    const ref = document.createElement("span");
-    ref.className = "gitlog-ref";
-    ref.textContent = c.refs ? c.refs + " " : "";
-
-    const msg = document.createElement("span");
-    msg.className = "gitlog-msg";
-    msg.textContent = c.msg;
-
-    const date = document.createElement("span");
-    date.className = "gitlog-date";
-    date.textContent = "  " + c.date;
-
-    row.append(hash, ref, msg, date);
+    row.className = "output-line gitlog-row";
     block.append(row);
     scrollToBottom();
+
+    await typeGraph(row, graph);
+    await wait(30);
+
+    const hashEl = document.createElement("span");
+    hashEl.className = "gitlog-hash";
+    hashEl.textContent = `${hash} `;
+    row.append(hashEl);
+
+    if (refs) {
+      const refsEl = document.createElement("span");
+      refsEl.className = `gitlog-ref${head ? " gitlog-head" : ""}`;
+      refsEl.textContent = `${refs} `;
+      row.append(refsEl);
+    }
+
+    const tag = document.createElement("span");
+    tag.className = `gitlog-tag gitlog-tag-${type}`;
+    tag.textContent = type;
+    row.append(tag);
+
+    const msgEl = document.createElement("span");
+    msgEl.className = "gitlog-msg";
+    msgEl.textContent = ": ";
+    row.append(msgEl);
+
+    for (const char of message) {
+      msgEl.textContent += char;
+      scrollToBottom();
+      await wait(14);
+    }
+  };
+
+  const typeBranchOnly = async (graph) => {
+    const row = document.createElement("div");
+    row.className = "output-line gitlog-row";
+    block.append(row);
+    scrollToBottom();
+    await typeGraph(row, graph);
     await wait(80);
-  }
+  };
+
+  const fadeBullet = async ({ graph, text }) => {
+    const row = document.createElement("div");
+    row.className = "output-line gitlog-row gitlog-bullet-line";
+    block.append(row);
+
+    for (const char of graph) appendGraphChar(row, char);
+
+    const bullet = document.createElement("span");
+    bullet.className = "gitlog-bullet";
+    bullet.textContent = text;
+    row.append(bullet);
+
+    scrollToBottom();
+    await wait(40);
+    row.classList.add("is-visible");
+  };
+
+  const summary = document.createElement("div");
+  summary.className = "output-line gitlog-summary";
+  summary.textContent = "career timeline graph  (2 branches: main · acad)";
+  block.append(summary);
+  scrollToBottom();
+  await wait(80);
+
+  await typeCommit({
+    graph: "* ",
+    hash: "a9f3d12",
+    refs: "(HEAD → main)",
+    type: "feat",
+    message: "AI Intern @ Ernst & Young (Jul–Aug 2025) · NLP/ML systems",
+    head: true,
+  });
+  await wait(60);
+  await typeBranchOnly("|");
+
+  await typeCommit({
+    graph: "* ",
+    hash: "7c2e891",
+    refs: "",
+    type: "build",
+    message: "semantic GST schema standardization engine",
+    head: false,
+  });
+  await fadeBullet({
+    graph: "|          ",
+    text: "└─ Sentence Transformers · all-MiniLM-L6-v2 fine-tuned",
+  });
+  await fadeBullet({
+    graph: "|             ",
+    text: "+8.1% cosine sim · 35% faster inference",
+  });
+  await wait(60);
+  await typeBranchOnly("|");
+  await typeBranchOnly("|\\ ");
+
+  await typeCommit({
+    graph: "| * ",
+    hash: "f1d9a57",
+    refs: "(branch: acad)",
+    type: "init",
+    message: "Semester 3 · DBMS · OS · ML · OOP",
+    head: false,
+  });
+  await wait(60);
+  await typeBranchOnly("| |");
+
+  await typeCommit({
+    graph: "* | ",
+    hash: "22c7b3e",
+    refs: "",
+    type: "feat",
+    message: "Data Analyst Intern @ Graceland Asset Mgmt · data cleaning",
+    head: false,
+  });
+  await wait(60);
+  await typeBranchOnly("| |");
+
+  await typeCommit({
+    graph: "| * ",
+    hash: "b8c3d11",
+    refs: "(branch: acad)",
+    type: "init",
+    message: "B.Tech DSE · MIT Manipal · 2024–28",
+    head: false,
+  });
+  await wait(60);
+  await typeBranchOnly("|/");
+  await typeBranchOnly("|");
+
+  await typeCommit({
+    graph: "* ",
+    hash: "d04f9c1",
+    refs: "",
+    type: "award",
+    message: "NASA SSDC — Dick Edwards Exceptional Leadership Award",
+    head: false,
+  });
+  await fadeBullet({
+    graph: "|          ",
+    text: "└─ top 0.5% global · National Winner · Asian Runner-Up",
+  });
+  await wait(60);
+  await typeBranchOnly("|");
+
+  await typeCommit({
+    graph: "* ",
+    hash: "88b2e73",
+    refs: "",
+    type: "lead",
+    message: "50-person international team · SSDC",
+    head: false,
+  });
+  await wait(60);
+  await typeBranchOnly("|");
+
+  await typeCommit({
+    graph: "* ",
+    hash: "c1a0044",
+    refs: "",
+    type: "init",
+    message: "first commit",
+    head: false,
+  });
+  await wait(60);
+
+  const divider = document.createElement("div");
+  divider.className = "output-line gitlog-divider";
+  divider.textContent = "  " + "─".repeat(42);
+  block.append(divider);
+
+  const end = document.createElement("div");
+  end.className = "output-line gitlog-end";
+  end.innerHTML = '  log ends · HEAD is current <span class="gitlog-cursor" aria-hidden="true"></span>';
+  block.append(end);
+  scrollToBottom();
 }
 
 function extractAiReply(data) {
@@ -2004,6 +2020,22 @@ function initHud() {
 
   const focusEl = document.getElementById("hud-focus");
   const subEl   = document.getElementById("hud-sub");
+  const uptimeEl = document.getElementById("hud-uptime");
+
+  const formatHudUptime = () => {
+    const elapsedSeconds = Math.floor((Date.now() - SESSION_START) / 1000);
+    const hours = Math.floor(elapsedSeconds / 3600);
+    const minutes = Math.floor((elapsedSeconds % 3600) / 60);
+    const seconds = elapsedSeconds % 60;
+    return `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
+  };
+
+  if (uptimeEl) {
+    uptimeEl.textContent = formatHudUptime();
+    setInterval(() => {
+      uptimeEl.textContent = formatHudUptime();
+    }, 1000);
+  }
 
   let fi = 0;
   let si = 0;
