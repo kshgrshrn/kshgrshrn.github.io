@@ -32,6 +32,60 @@ const PROJECTS = [
   }
 ];
 
+const RESUME_PDF_TEXT = `Kushagra Sharan
++91 84483 79673|kushagrasharan2006@gmail.com|LinkedIn|GitHub
+Education
+Manipal Institute of T echnologyManipal, India
+B.Tech, Data Science & Engineering|CGPA: 7.95/10 Aug 2024 – May 2028
+–Coursework: Machine Learning, Database Systems, Statistics, Java OOP, Python, C
+Experience
+Ernst & Young (EY)Gurugram, India
+AI Intern — Tax Technology & Reconciliation Jul 2025 – Aug 2025
+–Shipped 4 production-grade systems in 2 months at a Big Four firm, spanning NLP data pipelines, LLM-driven
+financial assistants, real-time analytics dashboards, and web automation.
+–Engineered a semantic GST Schema Standardization pipeline; fine-tunedall-MiniLM-L6-v2via hard-negative
+mining (MNRL), boosting Macro F1 by 9.4% on noisy data and reducing latency by 15x via batch encoding.
+–Developed an end-to-end conversational stock analysis assistant using Groq LLM APIs andyfinance, integrated with
+a full-stack financial reporting dashboard (FastAPI backend, Vite/TypeScript SPA).
+–Automated high-volume B2B invoice retrieval for major airlines (Qatar Airways, Vistara) using Selenium,
+streamlining data ingestion and eliminating manual handoffs for internal tax compliance teams.
+Graceland Asset ManagementHybrid
+Data Analyst Intern Jun 2024 – Aug 2024
+–Cleaned and structured multi-source real estate datasets using Pandas; performed exploratory analysis to support
+internal benchmarking and property-level comparison.
+–Produced summary reports adopted by the team for operational evaluation.
+Project
+Semantic GST Schema Standardization Engine/githubGithub
+–Designed an end-to-end NLP pipeline using all-MiniLM-L6-v2 to automatically map unstructured, noisy financial
+spreadsheet headers to a strict 61-field GST compliance schema, eliminating rule-based fragility.
+–Fine-tuned the model using MultipleNegativesRankingLoss (MNRL) and evaluated on 287 real-world variants;
+achieved +8.7% Top-1 accuracy, a 9.4% Macro F1 boost, and implemented batch encoding for a 15x latency reduction
+(0.27ms/column).
+–Architected a production-ready Python package featuring automated collision resolution for conflicting mappings,
+confidence thresholding, and structured JSONL audit logging to ensure full traceability for enterprise tax analysts.
+Leadership & A wards
+NASA Space Settlement Design Competition(Hybrid) Titusville, FL
+Head of Human Factors Engineering 2022 – 2023
+–Directed a 50+ member international team across engineering, life sciences, and design to deliver a full orbital habitat
+proposal via to NASA and Boeing engineers at Kennedy Space Center.
+–AwardedDick Edwards Exceptional Leadership Award(Top 0.5% global cohort); National Winner; Asian
+Regional and International Runner-Up.
+Other:Global Talent Search Examination — All India Rank 1 (English)
+Technical Skills
+Languages:Python, SQL, Java, C
+Libraries & F rameworks:Pandas, NumPy, Hugging Face Transformers, scikit-learn, Matplotlib, Seaborn, Selenium,
+FastAPI
+T ools:Git, Jupyter, REST APIs, Excel
+Domains:NLP, Machine Learning, Data Analytics, Workflow Automation, Financial Data Systems
+Certifications
+Python for Data Science, AI & Development —IBMCambridge English First —CEFR C1, Grade A`;
+
+const SITE_LINKS = [
+  "https://github.com/kshgrshrn",
+  "https://www.linkedin.com/in/kushagrasharan/",
+  "kushagrasharan2006@gmail.com",
+];
+
 const AI_SITE_CONTEXT = [
   "ROLE:",
   "You are K, the low-latency, high-agency AI interface for Kushagra Sharan's personal portfolio.",
@@ -63,6 +117,12 @@ const AI_SITE_CONTEXT = [
   "Never use bridge phrases like 'Based on my records.' Just state the data.",
   "Never blabber or add generic filler about Kushagra. Stay anchored to the terminal/site text.",
   "Always include one wildcard niche-interest mention when the conversation allows, such as AI safety or a grungy design choice.",
+  "",
+  "RESUME PDF (verbatim extracted text):",
+  RESUME_PDF_TEXT,
+  "",
+  "SITE LINKS FROM CODE:",
+  SITE_LINKS.map((link) => `- ${link}`).join("\n"),
   "",
   "STYLE GUARDRAILS:",
   "Keep replies brief unless the user asks for depth.",
