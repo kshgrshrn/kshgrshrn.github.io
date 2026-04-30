@@ -32,6 +32,16 @@ const PROJECTS = [
   }
 ];
 
+const AI_SITE_CONTEXT = [
+  "You are the assistant for Kushagra Sharan's personal terminal-style website.",
+  "Role: answer as a concise, technically strong terminal AI for visitors.",
+  "About Kushagra: B.Tech Data Science & Engineering student at MIT Manipal (2028),",
+  "formerly AI Intern at Ernst & Young, focused on NLP pipelines, financial ML, ML systems,",
+  "AI safety, and mechanistic interpretability.",
+  "Style: be direct, practical, and terminal-like; keep answers brief unless the user asks for depth.",
+  "If the user asks about Kushagra, describe his background accurately and positively without exaggeration.",
+].join("\n");
+
 const CONTENT = {
   intro: [
     "Kushagra Sharan",
@@ -1267,6 +1277,14 @@ function extractAiReply(data) {
   return typeof s === "string" ? s : "";
 }
 
+function buildAiCommand(command) {
+  return [
+    AI_SITE_CONTEXT,
+    "",
+    `User command: ${command}`,
+  ].join("\n");
+}
+
 async function executeCommand(command) {
   const count = recordCommand(command);
   const entry = COMMANDS[command];
@@ -1349,7 +1367,11 @@ async function executeCommand(command) {
       const response = await fetch(workerUrl, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ command }),
+        body: JSON.stringify({
+          command: buildAiCommand(command),
+          originalCommand: command,
+          context: AI_SITE_CONTEXT,
+        }),
       });
 
       const raw = (await response.text()).trim();
@@ -1368,10 +1390,26 @@ async function executeCommand(command) {
       const looksLikeHtml = raw.startsWith("<!") || raw.startsWith("<html");
       if (!response.ok || looksLikeHtml || raw === "") {
         const accessWall = response.redirected || response.status === 302 || response.status === 401 || response.status === 403;
+
+        if (accessWall || looksLikeHtml) {
+          await printLines([
+            `ai gateway: HTTP ${response.status}${response.redirected ? " (redirect)" : ""} — HTML, empty body, or Cloudflare Access before the worker. Fix: Zero Trust → Access → remove this hostname or add a Bypass for POST/OPTIONS from https://kushagrasharan.me and https://kshgrshrn.github.io.`,
+            "surface unchanged.",
+          ], "error");
+          return;
+        }
+
+        if (data && typeof data === "object") {
+          const upstreamMessage = data.error?.message ?? data.error ?? data.message ?? data.detail ?? raw;
+          await printLines([
+            `ai gateway: HTTP ${response.status} — ${upstreamMessage}`,
+            "surface unchanged.",
+          ], "error");
+          return;
+        }
+
         await printLines([
-          looksLikeHtml || response.status >= 400 || accessWall
-            ? `ai gateway: HTTP ${response.status}${response.redirected ? " (redirect)" : ""} — HTML, empty body, or Cloudflare Access before the worker. Fix: Zero Trust → Access → remove this hostname or add a Bypass for POST/OPTIONS from https://kushagrasharan.me and https://kshgrshrn.github.io.`
-            : "ai gateway responded with empty or invalid body.",
+          `ai gateway: HTTP ${response.status} — responded with empty or invalid JSON.`,
           "surface unchanged.",
         ], "error");
         return;
