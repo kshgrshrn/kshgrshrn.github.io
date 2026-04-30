@@ -104,6 +104,12 @@ body::after {
   transform: perspective(900px) rotateX(58deg) translate3d(var(--plane-x), var(--plane-y), 0) scale(1.08);
   transform-origin: 50% 0;
   transition: transform 300ms ease-out, opacity 240ms ease-out;
+  animation: grid-drift 28s linear infinite;
+}
+
+@keyframes grid-drift {
+  0%   { background-position: 0 0, 0 0, 0 0; }
+  100% { background-position: 0 0, 54px 54px, 54px 54px; }
 }
 
 input {
@@ -638,6 +644,12 @@ body.is-idle .cursor {
   to { transform: rotate(360deg); }
 }
 
+@keyframes banner-shimmer {
+  0%   { opacity: 0.55; text-shadow: none; }
+  50%  { opacity: 1;    text-shadow: 0 0 22px rgba(182,192,180,0.32), 0 0 6px rgba(182,192,180,0.18); }
+  100% { opacity: 0.82; text-shadow: 0 0 8px rgba(182,192,180,0.10); }
+}
+
 .banner-sub {
   color: var(--muted);
   margin-top: 10px;
@@ -1071,4 +1083,66 @@ body.is-glitching .terminal-output {
 .man-bold {
   color: var(--text);
   font-weight: 500;
+}
+
+#hud {
+  position: fixed;
+  top: clamp(18px, 4vh, 36px);
+  right: clamp(18px, 4vw, 48px);
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 3px;
+  pointer-events: none;
+  opacity: 0;
+  animation: hud-enter 600ms 1800ms ease forwards;
+}
+
+@keyframes hud-enter {
+  from { opacity: 0; transform: translateY(-4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.hud-row {
+  font-family: var(--font);
+  font-size: 0.64rem;
+  letter-spacing: 0.08em;
+  color: var(--dim);
+  text-align: right;
+  line-height: 1.7;
+  white-space: nowrap;
+}
+
+.hud-row.hud-focus {
+  color: var(--muted);
+}
+
+.hud-row.hud-sub {
+  color: var(--dim);
+  opacity: 0.7;
+}
+
+.hud-dot {
+  display: inline-block;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--accent);
+  margin-right: 6px;
+  vertical-align: middle;
+  animation: hud-pulse 2.8s ease-in-out infinite;
+}
+
+@keyframes hud-pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.22; }
+}
+
+.hud-status {
+  vertical-align: middle;
+}
+
+@media (max-width: 620px) {
+  #hud { display: none; }
 }

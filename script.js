@@ -287,6 +287,65 @@ const COMMANDS = {
       return [];
     }
   },
+  research: {
+    description: " -- active interests",
+    pace: "measured",
+    run: async () => {
+      const block = document.createElement("div");
+      block.className = "output-block";
+      terminal.output.append(block);
+
+      const areas = [
+        {
+          area: "mechanistic interpretability",
+          note: "circuits, superposition, feature geometry in transformers"
+        },
+        {
+          area: "ai safety / alignment",
+          note: "scalable oversight, reward hacking, activation steering"
+        },
+        {
+          area: "nlp systems",
+          note: "embeddings at production scale — from the EY semantic reconciliation work"
+        },
+        {
+          area: "financial ml",
+          note: "structured data, anomaly detection, schema standardization"
+        },
+        {
+          area: "computational neuroscience",
+          note: "representational similarity, neural geometry, mind-body interface"
+        }
+      ];
+
+      for (const item of areas) {
+        const nameRow = document.createElement("div");
+        nameRow.className = "output-line exp-title";
+        nameRow.style.fontSize = "0.84rem";
+        nameRow.textContent = "  " + item.area;
+        block.append(nameRow);
+        scrollToBottom();
+        await wait(80);
+
+        const noteRow = document.createElement("div");
+        noteRow.className = "output-line exp-period";
+        noteRow.style.paddingLeft = "4px";
+        noteRow.textContent = "    → " + item.note;
+        block.append(noteRow);
+        scrollToBottom();
+        await wait(outputDelay(0, item.note, "measured"));
+      }
+
+      await wait(120);
+      const footer = document.createElement("div");
+      footer.className = "output-line";
+      footer.style.marginTop = "8px";
+      footer.innerHTML = `  reach out → <a href="mailto:kushagrasharan2006@gmail.com">kushagrasharan2006@gmail.com</a>`;
+      block.append(footer);
+      scrollToBottom();
+      return [];
+    }
+  },
   writing: {
     hidden: true,
     pace: "quick",
@@ -1288,9 +1347,10 @@ async function executeCommand(command) {
 
       const looksLikeHtml = raw.startsWith("<!") || raw.startsWith("<html");
       if (!response.ok || looksLikeHtml || raw === "") {
+        const accessWall = response.redirected || response.status === 302 || response.status === 401 || response.status === 403;
         await printLines([
-          looksLikeHtml || response.status >= 400
-            ? `ai gateway returned HTML or non-JSON (HTTP ${response.status}). The worker may sit behind Cloudflare Access — expose POST / anonymously or whitelist this origin.`
+          looksLikeHtml || response.status >= 400 || accessWall
+            ? `ai gateway: HTTP ${response.status}${response.redirected ? " (redirect)" : ""} — HTML, empty body, or Cloudflare Access before the worker. Fix: Zero Trust → Access → remove this hostname or add a Bypass for POST/OPTIONS from https://kushagrasharan.me and https://kshgrshrn.github.io.`
             : "ai gateway responded with empty or invalid body.",
           "surface unchanged.",
         ], "error");
@@ -1312,7 +1372,10 @@ async function executeCommand(command) {
       await printLines(aiLines, { className: "ai-response", pace: "measured" });
     } catch (e) {
       stopThinking();
-      await printLines(invalidResponse(command), "error");
+      const preflightHint = e && e.name === "TypeError"
+        ? ["hint: browser blocked the request before a response (CORS). Cloudflare Access often returns 403 on OPTIONS — bypass Access for this worker or return 204+CORS on OPTIONS."]
+        : [];
+      await printLines([...preflightHint, ...invalidResponse(command)], "error");
     }
 
     return;
@@ -1766,6 +1829,47 @@ function updateLightResponse(x, y) {
   terminal.litLine?.classList.add("is-lit");
 }
 
+function initHud() {
+  const focuses = [
+    "mechanistic interp",
+    "ai safety / alignment",
+    "nlp systems",
+    "financial ml",
+    "physics as compression"
+  ];
+  const subs = [
+    "open to research collab",
+    "seeking summer '25 internship",
+    "mit manipal · dse · y2"
+  ];
+
+  const focusEl = document.getElementById("hud-focus");
+  const subEl   = document.getElementById("hud-sub");
+
+  let fi = 0;
+  let si = 0;
+
+  setInterval(() => {
+    fi = (fi + 1) % focuses.length;
+    focusEl.style.opacity = "0";
+    focusEl.style.transition = "opacity 300ms";
+    setTimeout(() => {
+      focusEl.textContent = focuses[fi];
+      focusEl.style.opacity = "1";
+    }, 320);
+  }, 4200);
+
+  setInterval(() => {
+    si = (si + 1) % subs.length;
+    subEl.style.opacity = "0";
+    subEl.style.transition = "opacity 300ms";
+    setTimeout(() => {
+      subEl.textContent = subs[si];
+      subEl.style.opacity = "1";
+    }, 320);
+  }, 7000);
+}
+
 async function typewriterLine(text, className = "") {
   const row = document.createElement("div");
   row.className = ["output-line", className].filter(Boolean).join(" ");
@@ -1835,6 +1939,15 @@ async function boot() {
     scrollToBottom();
   }
 
+  await wait(220);
+  const bannerRows = document.querySelectorAll(".banner-line");
+  bannerRows.forEach((row, i) => {
+    setTimeout(() => {
+      row.style.animation = "banner-shimmer 480ms ease forwards";
+    }, i * 55);
+  });
+  await wait(480);
+
   await wait(180);
   await typewriterLine("data science & engineering. nlp. ml systems.", "banner-sub");
   await wait(60);
@@ -1853,6 +1966,8 @@ async function boot() {
 
   const initialCommand = commandFromHash();
   if (initialCommand) await runCommand(initialCommand);
+
+  initHud();
 }
 
 // Mobile quick-command buttons
