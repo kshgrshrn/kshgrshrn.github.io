@@ -44,9 +44,11 @@ class Mascot {
     const input = document.querySelector("#terminal-input");
     
     if (form && input) {
-      form.addEventListener("submit", () => {
-        const val = input.value.trim().toLowerCase();
-        if (val) this.handleInput(val);
+      input.addEventListener("keydown", (e) => {
+        if (e.key === "Enter") {
+          const val = input.value.trim().toLowerCase();
+          if (val) this.handleInput(val);
+        }
       });
     }
 
