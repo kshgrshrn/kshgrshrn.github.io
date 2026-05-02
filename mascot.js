@@ -127,6 +127,25 @@ class Mascot {
     }
   }
 
+  roam() {
+    if (window.innerWidth < 620) {
+      this.container.style.transform = "";
+      return;
+    }
+    
+    if (Math.random() > 0.35) {
+      this.container.style.transform = "translate(0, 0)";
+      return;
+    }
+    
+    const maxX = window.innerWidth - 280;
+    const maxY = window.innerHeight - 200;
+    const randomX = -(Math.random() * maxX);
+    const randomY = -(Math.random() * (maxY / 2) + (maxY / 4)); // Favor upper half but not extreme edge
+    
+    this.container.style.transform = `translate(${randomX}px, ${randomY}px)`;
+  }
+
   resetIdle() {
     if (this.idleTimer) clearTimeout(this.idleTimer);
     const interval = Math.random() * (MASCOT_IDLE_MAX - MASCOT_IDLE_MIN) + MASCOT_IDLE_MIN;
@@ -135,6 +154,7 @@ class Mascot {
       if (this.state === "idle" && !this.bubble.classList.contains("visible")) {
         const text = IDLE_SPEECH[Math.floor(Math.random() * IDLE_SPEECH.length)];
         this.speak(text, 2500);
+        this.roam();
       }
       this.resetIdle();
     }, interval);

@@ -7,6 +7,7 @@
   align-items: flex-end;
   z-index: 9999;
   pointer-events: none;
+  transition: transform 1.8s cubic-bezier(0.25, 1, 0.5, 1);
 }
 
 .mascot-bubble {
@@ -88,7 +89,7 @@
 
 @media (max-width: 620px) {
   #mascot-container {
-    bottom: 16px;
+    bottom: 85px; /* Safely above the mobile terminal input */
     right: 16px;
     transform: translateX(20px);
     opacity: 0.4;
@@ -108,5 +109,8 @@
   .mascot-bubble {
     transition: opacity 0.2s ease;
     transform: none;
+  }
+  #mascot-container {
+    transition: none;
   }
 }
