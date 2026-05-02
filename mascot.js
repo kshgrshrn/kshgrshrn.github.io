@@ -37,6 +37,7 @@ class Mascot {
   init() {
     this.resetIdle();
     this.attachListeners();
+    this.startRoaming();
   }
 
   attachListeners() {
@@ -44,11 +45,15 @@ class Mascot {
     const input = document.querySelector("#terminal-input");
     
     if (form && input) {
-      input.addEventListener("keydown", (e) => {
-        if (e.key === "Enter") {
-          const val = input.value.trim().toLowerCase();
-          if (val) this.handleInput(val);
-        }
+      let lastVal = "";
+      input.addEventListener("input", () => {
+        lastVal = input.value;
+      });
+      
+      form.addEventListener("submit", () => {
+        const val = lastVal.trim().toLowerCase();
+        if (val) this.handleInput(val);
+        lastVal = "";
       });
     }
 
@@ -116,8 +121,22 @@ class Mascot {
       
       if (!res.ok) throw new Error("Unreachable");
       
-      const data = await res.json();
-      const reply = data?.response ?? data?.reply ?? data?.text ?? "Processing complete.";
+      const raw = await res.text();
+      let data = null;
+      if (raw && raw.trim().startsWith("{")) {
+        try { data = JSON.parse(raw); } catch {}
+      }
+      
+      let reply = "Processing complete.";
+      if (data) {
+        if (typeof extractAiReply === "function") {
+          reply = extractAiReply(data) || reply;
+        } else {
+          reply = data.response ?? data.reply ?? data.text ?? reply;
+        }
+      } else if (raw && !raw.startsWith("<!")) {
+        reply = raw;
+      }
       
       this.setState("success");
       this.speak(reply, 5500);
@@ -127,21 +146,31 @@ class Mascot {
     }
   }
 
+  startRoaming() {
+    // Check every 10 seconds if we should move
+    setInterval(() => {
+      if (this.state === "idle" && Math.random() > 0.5) {
+        this.roam();
+      }
+    }, 10000);
+  }
+
   roam() {
     if (window.innerWidth < 620) {
       this.container.style.transform = "";
       return;
     }
     
-    if (Math.random() > 0.35) {
+    // 30% chance to go back home
+    if (Math.random() > 0.7) {
       this.container.style.transform = "translate(0, 0)";
       return;
     }
     
-    const maxX = window.innerWidth - 280;
-    const maxY = window.innerHeight - 200;
+    const maxX = window.innerWidth - 300;
+    const maxY = window.innerHeight - 250;
     const randomX = -(Math.random() * maxX);
-    const randomY = -(Math.random() * (maxY / 2) + (maxY / 4)); // Favor upper half but not extreme edge
+    const randomY = -(Math.random() * maxY);
     
     this.container.style.transform = `translate(${randomX}px, ${randomY}px)`;
   }
@@ -154,7 +183,6 @@ class Mascot {
       if (this.state === "idle" && !this.bubble.classList.contains("visible")) {
         const text = IDLE_SPEECH[Math.floor(Math.random() * IDLE_SPEECH.length)];
         this.speak(text, 2500);
-        this.roam();
       }
       this.resetIdle();
     }, interval);
