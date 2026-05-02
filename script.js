@@ -83,6 +83,7 @@ Python for Data Science, AI & Development —IBMCambridge English First —CEFR 
 const SITE_LINKS = [
   "https://github.com/kshgrshrn",
   "https://www.linkedin.com/in/kushagrasharan/",
+  "https://x.com/kshgrshrn",
   "kushagrasharan2006@gmail.com",
 ];
 
@@ -145,7 +146,8 @@ const CONTENT = {
     "",
     `email    -> <a href="mailto:kushagrasharan2006@gmail.com">kushagrasharan2006@gmail.com</a>`,
     `github   -> <a href="https://github.com/kshgrshrn" target="_blank" rel="noreferrer">https://github.com/kshgrshrn</a>`,
-    `linkedin -> <a href="https://www.linkedin.com/in/kushagrasharan/" target="_blank" rel="noreferrer">https://www.linkedin.com/in/kushagrasharan/</a>`
+    `linkedin -> <a href="https://www.linkedin.com/in/kushagrasharan/" target="_blank" rel="noreferrer">https://www.linkedin.com/in/kushagrasharan/</a>`,
+    `x.com    -> <a href="https://x.com/kshgrshrn" target="_blank" rel="noreferrer">https://x.com/kshgrshrn</a>`
   ],
   experience: [
     "=== EXPERIENCE ===",
@@ -169,7 +171,8 @@ const CONTENT = {
   links: [
     `<a href="mailto:kushagrasharan2006@gmail.com">email</a>`,
     `<a href="https://github.com/kshgrshrn" target="_blank" rel="noreferrer">github</a>`,
-    `<a href="https://www.linkedin.com/in/kushagrasharan/" target="_blank" rel="noreferrer">linkedin</a>`
+    `<a href="https://www.linkedin.com/in/kushagrasharan/" target="_blank" rel="noreferrer">linkedin</a>`,
+    `<a href="https://x.com/kshgrshrn" target="_blank" rel="noreferrer">x</a>`
   ],
   aboutAfterRepeat: [
     "the longer answer:",
@@ -624,7 +627,8 @@ const COMMANDS = {
       const lines = [
         `email   -> <a href="mailto:kushagrasharan2006@gmail.com">kushagrasharan2006@gmail.com</a>`,
         `github  -> <a href="https://github.com/kshgrshrn" target="_blank" rel="noreferrer">github.com/kshgrshrn</a>`,
-        `linkedin -> <a href="https://www.linkedin.com/in/kushagrasharan/" target="_blank" rel="noreferrer">linkedin.com/in/kushagrasharan</a>`
+        `linkedin -> <a href="https://www.linkedin.com/in/kushagrasharan/" target="_blank" rel="noreferrer">linkedin.com/in/kushagrasharan</a>`,
+        `x        -> <a href="https://x.com/kshgrshrn" target="_blank" rel="noreferrer">x.com/kshgrshrn</a>`
       ];
 
       await printLines(lines, { pace: "measured" });
@@ -718,7 +722,7 @@ const COMMANDS = {
           continue;
         }
         row.className = "neofetch-row output-line";
-        const k = document.createElement("span");
+          footer.innerHTML = `  reach out → <a href="mailto:kushagrasharan2006@gmail.com">kushagrasharan2006@gmail.com</a> · <a href="https://x.com/kshgrshrn" target="_blank" rel="noreferrer">x.com/kshgrshrn</a>`;
         k.className = "neofetch-key";
         k.textContent = key;
         const v = document.createElement("span");
@@ -2180,3 +2184,9 @@ if (shortcutOverlay) {
 }
 
 boot();
+
+// Initialize K Mascot
+window.addEventListener("DOMContentLoaded", () => {
+  const kMascot = new Mascot();
+  kMascot.init();
+});

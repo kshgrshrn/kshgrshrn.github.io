@@ -1,0 +1,112 @@
+#mascot-container {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  z-index: 9999;
+  pointer-events: none;
+}
+
+.mascot-bubble {
+  background: var(--bg, #0c0e0f);
+  border: 1px solid var(--dim, #505852);
+  color: var(--accent, #b6c0b4);
+  padding: 8px 12px;
+  margin-bottom: 16px;
+  font-family: inherit;
+  font-size: 0.85rem;
+  line-height: 1.4;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 0.4s ease, transform 0.4s ease;
+  max-width: 220px;
+  pointer-events: auto;
+  border-left: 3px solid var(--accent, #b6c0b4);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+.mascot-bubble.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.mascot-bubble strong {
+  color: #fff;
+  font-weight: 600;
+}
+
+.mascot-glyph {
+  width: 48px;
+  height: 48px;
+  pointer-events: auto;
+  cursor: pointer;
+  color: var(--dim, #505852);
+  transition: transform 0.3s ease;
+}
+
+.mascot-glyph path,
+.mascot-glyph rect {
+  stroke: currentColor;
+  transition: stroke 0.3s ease, filter 0.3s ease;
+}
+
+@keyframes mascot-breathe {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
+}
+
+@keyframes mascot-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.6; transform: scale(0.96); }
+}
+
+.state-idle {
+  animation: mascot-breathe 4s infinite ease-in-out;
+}
+
+.state-thinking {
+  color: var(--accent, #b6c0b4);
+  animation: mascot-pulse 1.2s infinite ease-in-out;
+}
+
+.state-speaking {
+  color: var(--accent, #b6c0b4);
+}
+
+.state-success {
+  color: #6db87a;
+}
+.state-success path, .state-success rect {
+  filter: drop-shadow(0 0 4px rgba(109, 184, 122, 0.4));
+}
+
+.state-error {
+  color: #bc9d9d;
+}
+
+@media (max-width: 620px) {
+  #mascot-container {
+    bottom: 16px;
+    right: 16px;
+    transform: translateX(20px);
+    opacity: 0.4;
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.4s ease;
+  }
+  
+  #mascot-container.revealed {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .state-idle, .state-thinking {
+    animation: none;
+  }
+  .mascot-bubble {
+    transition: opacity 0.2s ease;
+    transform: none;
+  }
+}
