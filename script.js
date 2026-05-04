@@ -2185,8 +2185,4 @@ if (shortcutOverlay) {
 
 boot();
 
-// Initialize K Mascot
-window.addEventListener("DOMContentLoaded", () => {
-  const kMascot = new Mascot();
-  kMascot.init();
-});
+// Mascot is self-initialised in mascot.js via DOMContentLoaded
