@@ -41,7 +41,7 @@ const IDLE_SPEECH = [
    inside the inline chat header so the block feels "authored" by K */
 const GLYPH_SVG = `<svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
   <path d="M24 4L44 24L24 44L4 24L24 4Z" stroke-width="2" fill="var(--bg,#0c0e0f)"/>
-  <rect x="20" y="20" width="8" height="8" stroke-width="2"/>
+  <rect x="20" y="20" width="8" height="8" stroke-width="2" fill="none"/>
 </svg>`;
 
 /* ── Utility ──────────────────────────────────────── */
@@ -101,7 +101,8 @@ class Mascot {
   /* ── State management ──────────────────────────── */
   setState(state) {
     this.state = state;
-    this.glyph.className = `mascot-glyph state-${state}`;
+    /* SVG elements use SVGAnimatedString for className — must use setAttribute */
+    this.glyph.setAttribute("class", `mascot-glyph state-${state}`);
   }
 
   /* ── Floating status bubble (brief overlay above glyph) ── */
