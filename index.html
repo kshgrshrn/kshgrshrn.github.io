@@ -2,87 +2,125 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <meta name="description" content="Kushagra Sharan — Data Science & Engineering @ MIT Manipal. NLP systems, ML pipelines, AI internships.">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Kushagra Sharan — Data Science & Engineering @ MIT Manipal.">
   <meta property="og:title" content="Kushagra Sharan">
-  <meta property="og:description" content="Data Science & Engineering @ MIT Manipal. NLP, ML Systems, AI.">
+  <meta property="og:description" content="Data Science & Engineering @ MIT Manipal. Machine Learning, AI Systems, Research.">
   <meta property="og:url" content="https://kushagrasharan.me">
   <meta property="og:type" content="website">
-  <link rel="icon" type="image/png" href="/favicon.png">
   <title>Kushagra Sharan</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
-  <link rel="stylesheet" href="mascot-styles.css">
 </head>
 <body>
-  <div class="focus-pass-overlay" aria-hidden="true"></div>
-  <main class="terminal" aria-label="Kushagra Sharan terminal">
-    <div id="terminal-output" class="terminal-output" aria-live="polite"></div>
+  <div class="Container">
+    <header class="Header">
+      <h1>Kushagra Sharan</h1>
+      <div class="Subtitle">Data Science & Engineering @ MIT Manipal</div>
+      
+      <nav class="LinkList">
+        <a href="resume.pdf" target="_blank" rel="noopener noreferrer">resume</a>
+        <a href="https://github.com/kshgrshrn" target="_blank" rel="noopener noreferrer">github</a>
+        <a href="https://www.linkedin.com/in/kushagrasharan/" target="_blank" rel="noopener noreferrer">linkedin</a>
+        <a href="legacy/writing.html">blog</a>
+        <a href="mailto:kushagrasharan2006@gmail.com">email</a>
+      </nav>
+    </header>
 
-    <form id="terminal-form" class="input-row" autocomplete="off">
-      <label for="terminal-input" class="prompt">kushagra@node:~ $</label>
-      <span class="input-field">
-        <span id="input-mirror" class="input-mirror" aria-hidden="true"></span>
-        <span class="cursor" aria-hidden="true"></span>
-        <input
-          id="terminal-input"
-          class="terminal-input"
-          name="command"
-          type="text"
-          spellcheck="false"
-          autocapitalize="none"
-          autocomplete="off"
-          aria-label="Terminal command"
-          
-        >
-      </span>
-    </form>
-  </main>
-
-  <nav class="mobile-cmds" aria-label="Quick commands">
-    <button class="mobile-cmd-btn" data-cmd="about">about</button>
-    <button class="mobile-cmd-btn" data-cmd="experience">exp</button>
-    <button class="mobile-cmd-btn" data-cmd="projects">projects</button>
-    <button class="mobile-cmd-btn" data-cmd="neofetch">neofetch</button>
-    <button class="mobile-cmd-btn" data-cmd="contact">contact</button>
-  </nav>
-
-  <div id="shortcut-overlay" class="shortcut-overlay" role="dialog" aria-label="Keyboard shortcuts">
-    <div class="shortcut-box">
-      <div class="shortcut-title">keyboard shortcuts</div>
-      <div class="shortcut-row"><span class="shortcut-key">Tab</span><span class="shortcut-desc">autocomplete command</span></div>
-      <div class="shortcut-row"><span class="shortcut-key">→</span><span class="shortcut-desc">accept ghost suggestion</span></div>
-      <div class="shortcut-row"><span class="shortcut-key">↑ ↓</span><span class="shortcut-desc">command history</span></div>
-      <div class="shortcut-row"><span class="shortcut-key">Ctrl+L</span><span class="shortcut-desc">clear screen</span></div>
-      <div class="shortcut-row"><span class="shortcut-key">&&</span><span class="shortcut-desc">chain commands</span></div>
-      <div class="shortcut-row"><span class="shortcut-key">?</span><span class="shortcut-desc">toggle this overlay</span></div>
-      <div class="shortcut-close-hint">press ? or Esc to close</div>
+    <div class="Intro">
+      <p>I’m a Data Science & Engineering student at MIT Manipal interested in machine learning, AI systems, AI safety, and computational science.</p>
+      <p>I’ve worked on NLP, analytics, LLM applications, and automation systems through research, internships, and independent projects.</p>
+      <p>I enjoy exploring ideas across computer science, physics, philosophy, and technology.</p>
     </div>
+
+    <section class="Section">
+      <h2>Writing</h2>
+      <ul style="list-style:none; padding:0; margin:0;">
+        <li><a href="legacy/writing.html">Archived posts and research notes</a></li>
+      </ul>
+    </section>
+
+    <section class="Section">
+      <h2>Experience</h2>
+
+      <article class="ExperienceItem">
+        <div class="ExperienceHeader">
+          <div>Ernst & Young (EY)</div>
+          <div class="ExperienceMeta">Jul–Aug 2025</div>
+        </div>
+        <div class="ExperienceMeta" style="margin-bottom:0.5rem; display:block;">AI Intern / Tax Technology</div>
+        <p>AI-driven tax reconciliation project.</p>
+        <ul>
+          <li>NLP pipelines</li>
+          <li>Analytics dashboards</li>
+          <li>Automation</li>
+          <li>LLM applications</li>
+        </ul>
+      </article>
+
+      <article class="ExperienceItem">
+        <div class="ExperienceHeader">
+          <div>Cohere Open Science Community</div>
+        </div>
+        <p>Community member.</p>
+      </article>
+
+      <article class="ExperienceItem">
+        <div class="ExperienceHeader">
+          <div>AI Safety India Foundation Fellowship</div>
+        </div>
+        <p>Current fellow.</p>
+      </article>
+
+    </section>
+
+    <section class="Section">
+      <h2>Projects</h2>
+      
+      <ol class="ProjectList">
+        <li class="ProjectItem">
+          <h3><a href="https://github.com/kshgrshrn" target="_blank" rel="noopener noreferrer">AI Tax Assistant</a></h3>
+          <p>Natural-language querying system over enterprise databases and documents.</p>
+        </li>
+        <li class="ProjectItem">
+          <h3><a href="https://github.com/kshgrshrn/Semantic-GST-Schema-Standardization-Engine" target="_blank" rel="noopener noreferrer">Semantic GST Schema Engine</a></h3>
+          <p>Semantic standardization pipeline using fine-tuned models for corporate reconciliation.</p>
+        </li>
+      </ol>
+    </section>
+
+    <section class="Section">
+      <h2>Education</h2>
+
+      <article class="EducationItem">
+        <div class="ExperienceHeader">
+          <div>MIT Manipal</div>
+          <div class="ExperienceMeta">2024–2028</div>
+        </div>
+        <div>B.Tech Data Science & Engineering</div>
+        <div class="ExperienceMeta" style="margin-top:0.3rem;">CGPA: 8.04</div>
+      </article>
+    </section>
+
+    <section class="Section">
+      <h2>Interests</h2>
+      <ul class="InterestsList">
+        <li>machine learning</li>
+        <li>ai safety</li>
+        <li>physics</li>
+        <li>consciousness studies</li>
+        <li>music</li>
+        <li>philosophy</li>
+        <li>books</li>
+      </ul>
+    </section>
+
+    <footer class="Footer">
+      <div>Kushagra Sharan &mdash; Built with care.</div>
+      <div>
+        Last updated automatically from git commit date. <br/>
+        <a href="https://github.com/kshgrshrn/kshgrshrn.github.io" target="_blank" rel="noopener noreferrer" style="font-size:0.8rem;">View source on GitHub</a>
+      </div>
+    </footer>
   </div>
-
-  <div id="system-cursor" class="system-cursor" aria-hidden="true"></div>
-
-  <div id="hud" aria-hidden="true">
-    <div class="hud-row">
-      <span class="hud-dot"></span>
-      <span class="hud-status">node online</span>
-    </div>
-    <div class="hud-row hud-uptime" id="hud-uptime">00:00:00</div>
-    <div class="hud-row hud-focus" id="hud-focus">mechanistic interp</div>
-    <div class="hud-row hud-sub" id="hud-sub">open to research collab</div>
-  </div>
-
-  <div id="mascot-container">
-    <div class="mascot-bubble"></div>
-    <svg class="mascot-glyph state-idle" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path d="M24 4L44 24L24 44L4 24L24 4Z" stroke-width="2" fill="var(--bg, #0c0e0f)"/>
-      <rect x="20" y="20" width="8" height="8" stroke-width="2" fill="none"/>
-    </svg>
-  </div>
-
-  <script src="script.js" defer></script>
-  <script src="mascot.js" defer></script>
 </body>
 </html>
