@@ -1,0 +1,11 @@
+const menuButton=document.querySelector('.menu-toggle');
+const mobileNav=document.querySelector('.mobile-nav');
+menuButton?.addEventListener('click',()=>{const open=mobileNav.classList.toggle('open');menuButton.setAttribute('aria-expanded',String(open));menuButton.querySelector('b').textContent=open?'×':'+'});
+mobileNav?.querySelectorAll('a').forEach(link=>link.addEventListener('click',()=>{mobileNav.classList.remove('open');if(menuButton){menuButton.setAttribute('aria-expanded','false');menuButton.querySelector('b').textContent='+'}}));
+const observer=new IntersectionObserver(entries=>entries.forEach(entry=>{if(entry.isIntersecting){entry.target.classList.add('visible');observer.unobserve(entry.target)}}),{threshold:.12});
+document.querySelectorAll('.reveal').forEach((element,index)=>{element.style.transitionDelay=`${Math.min(index*45,300)}ms`;observer.observe(element)});
+document.querySelector('#year').textContent=new Date().getFullYear();
+const progress=document.querySelector('.progress-track span');
+window.addEventListener('scroll',()=>{const max=document.documentElement.scrollHeight-window.innerHeight;progress.style.height=`${max>0?(window.scrollY/max)*100:0}%`},{passive:true});
+const sections=[...document.querySelectorAll('main section[id]')];const navLinks=[...document.querySelectorAll('.desktop-nav a')];const sectionObserver=new IntersectionObserver(entries=>entries.forEach(entry=>{if(entry.isIntersecting){navLinks.forEach(link=>link.classList.toggle('is-active',link.getAttribute('href')===`#${entry.target.id}`))}}),{rootMargin:'-35% 0px -55%'});sections.forEach(section=>sectionObserver.observe(section));
+const graphic=document.querySelector('.hero-graphic');const reduced=window.matchMedia('(prefers-reduced-motion: reduce)').matches;window.addEventListener('pointermove',event=>{if(!graphic||reduced||window.innerWidth<701)return;const x=(event.clientX/window.innerWidth-.5)*10;const y=(event.clientY/window.innerHeight-.5)*10;graphic.style.transform=`translate(calc(-50% + ${x}px),calc(-50% + ${y}px))`},{passive:true});
