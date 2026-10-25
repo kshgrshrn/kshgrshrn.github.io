@@ -26,7 +26,18 @@ document.querySelector('#year').textContent = new Date().getFullYear();
 
 function setupScroll() {
   if (motionPreference.matches || dataSaver || !window.Lenis) return;
-  const lenis = new Lenis({ anchors: true, lerp: 0.1, smoothWheel: true });
+  const lenis = new Lenis({ lerp: 0.1, smoothWheel: true });
+  document.querySelectorAll('a[href^="#"]').forEach(link => {
+    link.addEventListener('click', event => {
+      if (event.defaultPrevented || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+      const hash = link.getAttribute('href');
+      const target = document.querySelector(hash);
+      if (!target) return;
+      event.preventDefault();
+      history.replaceState(null, '', hash);
+      lenis.scrollTo(target, { offset: target.id === 'top' ? 0 : -90 });
+    });
+  });
   if (window.gsap && window.ScrollTrigger) {
     lenis.on('scroll', ScrollTrigger.update);
     gsap.ticker.add(time => lenis.raf(time * 1000));
