@@ -3,42 +3,56 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#050505">
   <meta name="description" content="Kushagra Sharan builds machine learning, retrieval, and data systems for high-stakes information work.">
   <meta property="og:title" content="Kushagra Sharan - Machine learning systems">
   <meta property="og:description" content="Technical work in multilingual retrieval, schema intelligence, and applied data systems.">
   <meta property="og:type" content="website">
+  <meta property="og:url" content="https://kushagrasharan.me/">
+  <link rel="canonical" href="https://kushagrasharan.me/">
   <title>Kushagra Sharan - Machine learning systems</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/lenis@1.3.27/dist/lenis.css">
   <link rel="stylesheet" href="style.css">
+  <script defer src="https://unpkg.com/lenis@1.3.27/dist/lenis.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/gsap.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/ScrollTrigger.min.js"></script>
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/vanta@0.5.24/dist/vanta.net.min.js"></script>
   <script defer src="script.js"></script>
 </head>
 <body>
+  <a class="skip-link" href="#top">Skip to content</a>
+  <div class="reading-progress" aria-hidden="true"><span></span></div>
   <header class="site-header shell">
-    <a class="monogram" href="#top" aria-label="Kushagra Sharan, home">K<span>S</span></a>
+    <a class="monogram" href="#top" aria-label="Kushagra Sharan, home">K<span>S</span><i aria-hidden="true"></i></a>
     <nav aria-label="Main navigation"><a href="#work">Work</a><a href="#profile">Profile</a><a href="resume.pdf" target="_blank" rel="noopener noreferrer">Résumé</a></nav>
-    <a class="contact" href="mailto:kushagrasharan2006@gmail.com">Start a conversation <span>↗</span></a>
-    <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="mobile-nav">Index <b>+</b></button>
+    <a class="contact" href="mailto:kushagrasharan2006@gmail.com">Let’s talk <span aria-hidden="true">↗</span></a>
+    <button class="menu-toggle" type="button" aria-label="Open navigation" aria-expanded="false" aria-controls="mobile-nav">Menu <b aria-hidden="true">+</b></button>
   </header>
   <nav id="mobile-nav" class="mobile-nav shell" aria-label="Mobile navigation"><a href="#work">Work</a><a href="#profile">Profile</a><a href="resume.pdf" target="_blank" rel="noopener noreferrer">Résumé</a><a href="mailto:kushagrasharan2006@gmail.com">Start a conversation</a></nav>
   <main id="top">
-    <section class="hero shell">
-      <p class="edition">Kushagra Sharan <span>·</span> Selected folio <span>·</span> 2026</p>
-      <div class="hero-statement reveal"><h1>I make data<br><em>useful.</em></h1><p>Machine learning, retrieval, and reporting systems for tax and railway data that need to be queried, not just stored.</p></div>
-      <div class="hero-foot"><p>India<br>Available for internships &amp; focused collaborations</p><div class="axis" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div><a href="#work">Selected work <span>↓</span></a></div>
+    <section class="hero shell" aria-labelledby="hero-title">
+      <div class="hero-field" id="hero-field" aria-hidden="true"></div>
+      <div class="hero-grid" aria-hidden="true"></div>
+      <div class="hero-top"><p class="edition">Kushagra Sharan <span>/</span> Applied AI engineer</p><p class="hero-coordinates">Based in India / Working everywhere</p></div>
+      <div class="hero-statement"><p class="hero-lead">From messy inputs to working systems.</p><h1 id="hero-title"><span>I make data</span><strong>useful<span class="full-stop">.</span></strong></h1><div class="hero-description"><p>Machine learning, retrieval, and reporting systems for tax and railway data that need to be queried, not just stored.</p><a href="#work" class="hero-cta">Explore the work <span aria-hidden="true">↗</span></a></div></div>
+      <div class="hero-foot"><p><span class="status-dot" aria-hidden="true"></span> Available for internships<br>and focused collaborations</p><p>Portfolio / 2026</p><a href="#work">Scroll to explore <span aria-hidden="true">↓</span></a></div>
     </section>
     <section id="work" class="work shell">
-      <div class="section-caption"><p>Selected work</p><p>Three studies in<br>making information useful.</p></div>
+      <div class="section-caption"><p>01 / Selected work</p><h2>Ideas made<br>operational.</h2><p>Three studies in making<br>information useful.</p></div>
       <div class="work-list">
-        <article class="work-item reveal"><p class="work-no">I</p><div><h2>Multilingual<br>Text-to-SQL</h2><p>Lets railway teams query structured data in English, Hinglish, or Hindi. Built as a four-service deployment that can be reproduced with one command.</p><p class="technical-signal">12× faster local inference · ~50s to ~4s</p></div><aside><p>PostgreSQL<br>ChromaDB<br>Ollama / Docker</p><a href="mailto:kushagrasharan2006@gmail.com?subject=Multilingual%20Text-to-SQL">Ask about it <span>↗</span></a></aside></article>
-        <article class="work-item reveal"><p class="work-no">II</p><div><h2>Semantic GST<br>Schema Engine</h2><p>Turns inconsistent finance headers into a 61-field compliance schema, with confidence thresholds and a complete audit trail.</p><p class="technical-signal">+9.4 Macro F1 · 287 schema variants · 15× faster</p></div><aside><p>Python<br>Transformers<br>JSONL / MNRL</p><a href="https://github.com/kshgrshrn/Semantic-GST-Schema-Standardization-Engine" target="_blank" rel="noopener noreferrer">View project <span>↗</span></a></aside></article>
-        <article class="work-item reveal"><p class="work-no">III</p><div><h2>Four systems,<br>eight weeks.</h2><p>Built NLP pipelines, a reporting assistant, real-time analytics, and B2B invoice automation during an AI engineering internship at EY.</p><p class="technical-signal">Groq APIs · FastAPI · Vite / TypeScript · Selenium</p></div><aside><p>Reporting<br>Retrieval<br>Automation</p><a href="mailto:kushagrasharan2006@gmail.com?subject=EY%20AI%20work">Ask about it <span>↗</span></a></aside></article>
+        <article class="work-item" id="railway"><div class="work-index"><span>01</span><span>2026</span></div><div class="work-copy"><p class="work-type">Railway systems / language + retrieval</p><h3>Multilingual<br>Text-to-SQL</h3><p>Lets railway teams query structured data in English, Hinglish, or Hindi. Built as a four-service deployment that can be reproduced with one command.</p><div class="technical-signal"><strong>12×</strong><span>faster local inference<br>~50s to ~4s</span></div></div><div class="work-visual visual-rail" aria-hidden="true"><span class="visual-label">QUERY / ROUTE / ANSWER</span><div class="rail-path"><i></i><i></i><i></i><i></i><i></i></div><span class="visual-corner">01 — CRIS</span></div><div class="work-bottom"><span>PostgreSQL / ChromaDB / Ollama / Docker</span><a href="https://github.com/kshgrshrn/tdms-assistant-hybrid" target="_blank" rel="noopener noreferrer">Inspect project <span aria-hidden="true">↗</span></a></div></article>
+        <article class="work-item" id="gst"><div class="work-index"><span>02</span><span>2025</span></div><div class="work-copy"><p class="work-type">Tax technology / semantic matching</p><h3>Semantic GST<br>Schema Engine</h3><p>Turns inconsistent finance headers into a 61-field compliance schema, with confidence thresholds and a complete audit trail.</p><div class="technical-signal"><strong>61</strong><span>canonical fields<br>287 schema variants</span></div></div><div class="work-visual visual-gst" aria-hidden="true"><span class="visual-label">INPUT → MATCH → AUDIT</span><div class="matrix"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><span class="visual-corner">02 — EY</span></div><div class="work-bottom"><span>Python / Transformers / JSONL / MNRL</span><a href="https://github.com/kshgrshrn/Semantic-GST-Schema-Standardization-Engine" target="_blank" rel="noopener noreferrer">Inspect project <span aria-hidden="true">↗</span></a></div></article>
+        <article class="work-item" id="ey"><div class="work-index"><span>03</span><span>2025</span></div><div class="work-copy"><p class="work-type">Internship / applied AI delivery</p><h3>Four systems,<br>eight weeks.</h3><p>Built NLP pipelines, a reporting assistant, real-time analytics, and B2B invoice automation during an AI engineering internship at EY.</p><div class="technical-signal"><strong>04</strong><span>workstreams delivered<br>in eight weeks</span></div></div><div class="work-visual visual-ey" aria-hidden="true"><span class="visual-label">BUILD / CONNECT / SHIP</span><div class="system-orbit"><i></i><i></i><i></i><i></i></div><span class="visual-corner">03 — EY</span></div><div class="work-bottom"><span>Groq APIs / FastAPI / Vite / TypeScript / Selenium</span><a href="mailto:kushagrasharan2006@gmail.com?subject=EY%20AI%20work">Discuss project <span aria-hidden="true">↗</span></a></div></article>
       </div>
     </section>
-    <section class="proof shell"><p>Recent appointments</p><div><article><span>2026</span><h3>Centre for Railway<br>Information Systems</h3><p>AI/ML Intern · Multilingual retrieval</p></article><article><span>2025</span><h3>Ernst &amp; Young</h3><p>AI Intern · Tax systems</p></article><article><span>Before that</span><h3>NASA Space Settlement<br>Design Competition</h3><p>Human factors lead · 50+ person team</p></article></div></section>
-    <section id="profile" class="profile shell"><div class="profile-heading reveal"><p>Profile</p><h2>Good systems<br>survive <em>contact.</em></h2></div><div class="profile-copy reveal"><p>I build where ambiguous data meets real decisions. That means caring about retrieval quality, latency budgets, schema design, and the edge cases someone has to own.</p><p>I study Data Science and Engineering at Manipal Institute of Technology. Before that, I led human factors engineering for a 50+ person international NASA competition team.</p><div class="profile-links"><a href="resume.pdf" target="_blank" rel="noopener noreferrer">Read résumé <span>↗</span></a><a href="https://www.linkedin.com/in/kushagrasharan/" target="_blank" rel="noopener noreferrer">LinkedIn <span>↗</span></a><a href="https://github.com/kshgrshrn" target="_blank" rel="noopener noreferrer">GitHub <span>↗</span></a></div></div></section>
+    <section class="proof shell"><div class="proof-heading"><p>02 / Where I've worked</p><h2>Built in the<br>real world.</h2></div><div class="proof-list"><article><span>2026 — Present</span><h3>Centre for Railway<br>Information Systems</h3><p>AI/ML Intern · Multilingual retrieval</p></article><article><span>2025</span><h3>Ernst &amp; Young</h3><p>AI Intern · Tax systems</p></article><article><span>2022 — 2023</span><h3>NASA Space Settlement<br>Design Competition</h3><p>Human factors lead · 50+ person team</p></article></div></section>
+    <section id="profile" class="profile shell"><div class="profile-heading"><p>03 / The person behind the systems</p><h2>Good systems<br>survive contact<span>.</span></h2></div><div class="profile-copy"><p>I build where ambiguous data meets real decisions. That means caring about retrieval quality, latency budgets, schema design, and the edge cases someone has to own.</p><p>I study Data Science and Engineering at Manipal Institute of Technology. Before that, I led human factors engineering for a 50+ person international NASA competition team.</p><div class="profile-links"><a href="resume.pdf" target="_blank" rel="noopener noreferrer">Read résumé <span aria-hidden="true">↗</span></a><a href="https://www.linkedin.com/in/kushagrasharan/" target="_blank" rel="noopener noreferrer">LinkedIn <span aria-hidden="true">↗</span></a><a href="https://github.com/kshgrshrn" target="_blank" rel="noopener noreferrer">GitHub <span aria-hidden="true">↗</span></a></div></div></section>
+    <section class="closing shell" aria-label="Contact"><p>Have a difficult<br>problem?</p><a href="mailto:kushagrasharan2006@gmail.com">Let’s make it work<span aria-hidden="true">↗</span></a></section>
   </main>
-  <footer class="site-footer shell"><p>© <span id="year"></span> Kushagra Sharan</p><p><i></i> Open to internships, research, and difficult problems</p><a href="#top">Top ↑</a></footer>
+  <footer class="site-footer shell"><p>© <span id="year"></span> Kushagra Sharan</p><p><i></i> Open to internships, research, and difficult problems</p><a href="#top">Back to top ↑</a></footer>
 </body>
 </html>
