@@ -23,7 +23,9 @@
     header{display:flex;justify-content:space-between;align-items:baseline;padding:28px 0 22px}
     .name{font:400 23px/1.2 Georgia,"Times New Roman",serif;text-decoration:none;letter-spacing:-.02em}
     nav{display:flex;gap:20px;font-size:14px}
-    nav a{text-decoration:none;color:#444}
+    nav a{position:relative;text-decoration:none;color:#444}
+    nav a::after{content:"";position:absolute;left:0;right:0;bottom:-4px;height:1px;background:currentColor;transform:scaleX(0);transform-origin:left;transition:transform .2s ease}
+    nav a:hover::after,nav a:focus-visible::after{transform:scaleX(1)}
     main{padding-top:27px}
     section{margin:0 0 48px}
     h1,h2,p{margin-top:0}
@@ -34,7 +36,11 @@
     .muted{color:var(--muted)}
     .section-list{border-top:1px solid var(--line)}
     .item{display:grid;grid-template-columns:142px 1fr;gap:20px;padding:12px 0;border-bottom:1px solid var(--line)}
-    .item-title{font-weight:500}
+    .item-title{display:inline-block;font-weight:500;transition:transform .2s ease,color .2s ease}
+    .item-title a{text-decoration:none;position:relative}
+    .item-title a::after{content:"";position:absolute;left:0;right:0;bottom:-3px;height:1px;background:currentColor;transform:scaleX(0);transform-origin:left;transition:transform .2s ease}
+    .item-title a:hover::after,.item-title a:focus-visible::after{transform:scaleX(1)}
+    .item:hover .item-title,.item:focus-within .item-title{transform:translateX(2px);color:#444}
     .item p{margin:0;color:var(--muted)}
     .item small{display:block;color:var(--muted);font-size:13px;margin-top:2px}
     .inline-link{white-space:nowrap}
@@ -45,7 +51,7 @@
     footer{display:flex;justify-content:space-between;gap:12px;padding:0 0 28px;color:var(--muted);font-size:13px}
     @media(max-width:560px){.page{width:calc(100% - 36px)}header{padding-top:22px}.name{font-size:21px}nav{gap:13px;font-size:13px}main{padding-top:25px}section{margin-bottom:39px}.item,.interest-list .item{grid-template-columns:1fr;gap:2px;padding:11px 0}.item p{max-width:58ch}footer{font-size:12px}}
     @media(max-width:390px){header{flex-wrap:wrap;gap:13px}nav{width:100%;justify-content:space-between}}
-    @media(prefers-reduced-motion:reduce){:root{scroll-behavior:auto}}
+    @media(prefers-reduced-motion:reduce){:root{scroll-behavior:auto}*,*::before,*::after{transition-duration:.01ms!important}}
   </style>
 </head>
 <body>
