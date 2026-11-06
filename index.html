@@ -20,14 +20,16 @@
     a:focus-visible{outline:2px solid #222;outline-offset:4px}
     .skip{position:absolute;left:16px;top:12px;padding:10px 14px;background:#fff;transform:translateY(-150%)}.skip:focus{transform:none}
     .page{width:min(var(--width),calc(100% - 40px));margin:0 auto}
-    header{display:flex;justify-content:space-between;align-items:baseline;padding:28px 0 22px}
+    header{position:sticky;top:0;z-index:10;display:flex;justify-content:space-between;align-items:baseline;padding:28px 0 22px;background:rgba(255,255,255,.96);border-bottom:1px solid transparent;transition:padding .24s ease,border-color .24s ease}
+    @supports(backdrop-filter:blur(8px)){header{backdrop-filter:blur(8px)}}
+    header.is-scrolled{padding:17px 0 15px;border-color:var(--line)}
     .name{font:400 23px/1.2 Georgia,"Times New Roman",serif;text-decoration:none;letter-spacing:-.02em}
     nav{display:flex;gap:20px;font-size:14px}
     nav a{position:relative;text-decoration:none;color:#444}
     nav a::after{content:"";position:absolute;left:0;right:0;bottom:-4px;height:1px;background:currentColor;transform:scaleX(0);transform-origin:left;transition:transform .2s ease}
-    nav a:hover::after,nav a:focus-visible::after{transform:scaleX(1)}
+    nav a:hover::after,nav a:focus-visible::after,nav a[aria-current="location"]::after{transform:scaleX(1)}
     main{padding-top:27px}
-    section{margin:0 0 48px}
+    section{margin:0 0 48px;scroll-margin-top:78px}
     h1,h2,p{margin-top:0}
     h1{font:inherit;font-size:23px;font-weight:400;line-height:1.3;margin-bottom:15px}
     h2{font:inherit;font-size:20px;font-weight:500;line-height:1.35;margin-bottom:15px}
@@ -43,6 +45,8 @@
     .item:hover .item-title,.item:focus-within .item-title{transform:translateX(2px);color:#444}
     .item p{margin:0;color:var(--muted);transition:color .22s ease,transform .22s ease}
     .item:hover p{color:#444;transform:translateX(2px)}
+    .motion-ready .item.reveal-row{opacity:0;transform:translateY(10px);filter:blur(1px)}
+    .motion-ready .item.reveal-row.is-visible{opacity:1;transform:none;filter:none;transition:opacity .42s cubic-bezier(.16,1,.3,1) var(--row-delay,0ms),transform .42s cubic-bezier(.16,1,.3,1) var(--row-delay,0ms),filter .42s ease var(--row-delay,0ms)}
     .hover-text{background-image:linear-gradient(currentColor,currentColor);background-repeat:no-repeat;background-position:0 100%;background-size:0 1px;transition:background-size .22s ease,color .22s ease}
     .hover-text:hover{background-size:100% 1px;color:#444}
     .item small{display:block;color:var(--muted);font-size:13px;margin-top:2px}
@@ -51,13 +55,16 @@
     .interest-list .item{grid-template-columns:142px 1fr}
     .section-note{color:var(--muted);font-size:14px}
     .social{display:flex;gap:17px;flex-wrap:wrap;margin-top:18px}
+    .reading-trace{position:fixed;inset:0 0 auto;height:2px;z-index:30;pointer-events:none;background:#eee}
+    .reading-trace span{display:block;width:100%;height:100%;background:var(--ink);transform:scaleX(0);transform-origin:left center}
     footer{display:flex;justify-content:space-between;gap:12px;padding:0 0 28px;color:var(--muted);font-size:13px}
     @media(max-width:560px){.page{width:calc(100% - 36px)}header{padding-top:22px}.name{font-size:21px}nav{gap:13px;font-size:13px}main{padding-top:25px}section{margin-bottom:39px}.item,.interest-list .item{grid-template-columns:1fr;gap:2px;padding:11px 0}.item p{max-width:58ch}footer{font-size:12px}}
     @media(max-width:390px){header{flex-wrap:wrap;gap:13px}nav{width:100%;justify-content:space-between}}
-    @media(prefers-reduced-motion:reduce){:root{scroll-behavior:auto}*,*::before,*::after{transition-duration:.01ms!important}}
+    @media(prefers-reduced-motion:reduce){:root{scroll-behavior:auto}*,*::before,*::after{transition-duration:.01ms!important}.reading-trace{display:none}}
   </style>
 </head>
 <body>
+  <div class="reading-trace" aria-hidden="true"><span></span></div>
   <a class="skip" href="#main">Skip to content</a>
   <div class="page">
     <header>
@@ -112,5 +119,59 @@
     </main>
     <footer><span>Manipal, India</span><a href="#top">Back to top ↑</a></footer>
   </div>
+  <script>
+    (function(){
+      var reduced=matchMedia("(prefers-reduced-motion: reduce)").matches;
+      var trace=document.querySelector(".reading-trace span");
+      var header=document.querySelector("header");
+      var queued=false;
+      function updateScrollState(){
+        if(queued)return;
+        queued=true;
+        requestAnimationFrame(function(){
+          queued=false;
+          var max=document.documentElement.scrollHeight-innerHeight;
+          if(!reduced&&trace)trace.style.transform="scaleX("+(max>0?scrollY/max:0)+")";
+          header.classList.toggle("is-scrolled",scrollY>24);
+        });
+      }
+      addEventListener("scroll",updateScrollState,{passive:true});
+      addEventListener("resize",updateScrollState);
+      updateScrollState();
+
+      var navLinks=Array.from(document.querySelectorAll("nav a[href^='#']"));
+      var sectionLinks=new Map(navLinks.map(function(link){return [link.getAttribute("href").slice(1),link]}));
+      if("IntersectionObserver" in window){
+        var navObserver=new IntersectionObserver(function(entries){
+          entries.forEach(function(entry){
+            if(!entry.isIntersecting)return;
+            var active=sectionLinks.get(entry.target.id);
+            if(active){
+              navLinks.forEach(function(link){link.removeAttribute("aria-current")});
+              active.setAttribute("aria-current","location");
+            }
+          });
+        },{rootMargin:"-32% 0px -58% 0px",threshold:0});
+        document.querySelectorAll("main section[id]").forEach(function(section){navObserver.observe(section)});
+
+        if(!reduced){
+          document.documentElement.classList.add("motion-ready");
+          var rows=Array.from(document.querySelectorAll(".section-list .item"));
+          var revealObserver=new IntersectionObserver(function(entries){
+            entries.forEach(function(entry){
+              if(!entry.isIntersecting)return;
+              entry.target.classList.add("is-visible");
+              revealObserver.unobserve(entry.target);
+            });
+          },{threshold:.08,rootMargin:"0px 0px -4% 0px"});
+          rows.forEach(function(row,index){
+            row.classList.add("reveal-row");
+            row.style.setProperty("--row-delay",(index%4)*45+"ms");
+            revealObserver.observe(row);
+          });
+        }
+      }
+    })();
+  </script>
 </body>
 </html>
