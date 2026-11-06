@@ -41,7 +41,10 @@
     .item-title a::after{content:"";position:absolute;left:0;right:0;bottom:-3px;height:1px;background:currentColor;transform:scaleX(0);transform-origin:left;transition:transform .2s ease}
     .item-title a:hover::after,.item-title a:focus-visible::after{transform:scaleX(1)}
     .item:hover .item-title,.item:focus-within .item-title{transform:translateX(2px);color:#444}
-    .item p{margin:0;color:var(--muted)}
+    .item p{margin:0;color:var(--muted);transition:color .22s ease,transform .22s ease}
+    .item:hover p{color:#444;transform:translateX(2px)}
+    .hover-text{background-image:linear-gradient(currentColor,currentColor);background-repeat:no-repeat;background-position:0 100%;background-size:0 1px;transition:background-size .22s ease,color .22s ease}
+    .hover-text:hover{background-size:100% 1px;color:#444}
     .item small{display:block;color:var(--muted);font-size:13px;margin-top:2px}
     .inline-link{white-space:nowrap}
     .more p{max-width:68ch;margin-bottom:12px}
@@ -65,7 +68,7 @@
       <section class="about" id="about" aria-labelledby="about-title">
         <h1 id="about-title">About</h1>
         <p>Hi, I’m Kushagra. I’m a third-year B.Tech student in Data Science and Engineering at Manipal Institute of Technology, graduating in 2028.</p>
-        <p>Most of my recent projects are about the system around a model: selecting schema context, running inference locally, validating generated queries, and measuring output quality. I like tracing an answer through those stages to find where it came from and where it could break.</p>
+        <p>Most of my recent projects are about the system around a model: selecting <span class="hover-text">schema context</span>, running inference locally, validating generated queries, and measuring output quality. I like tracing an answer through those stages to find where it came from and where it could break.</p>
         <p class="muted">I was an AI/ML intern at the Centre for Railway Information Systems, where I built tools for railway data. I’d like to work on AI research and engineering, especially the systems around language models. For now, I’m learning by building software, measuring changes, and tracing bugs to their source.</p>
       </section>
 
@@ -80,8 +83,8 @@
       <section id="projects" aria-labelledby="projects-title">
         <h2 id="projects-title">Selected projects</h2>
         <div class="section-list">
-          <article class="item"><div><span class="item-title"><a href="https://github.com/kshgrshrn/tdms-assistant-hybrid" target="_blank" rel="noopener noreferrer">Multilingual Text-to-SQL ↗</a></span><small>Python · FastAPI · Ollama · ChromaDB · PostgreSQL</small></div><p>The service searches the database schema before asking a local model to generate SQL. Pruning irrelevant context and tuning inference cut query time from about 50 seconds to 4; four services run together through Docker Compose.</p></article>
-          <article class="item"><div><span class="item-title"><a href="https://github.com/kshgrshrn/Semantic-GST-Schema-Standardization-Engine" target="_blank" rel="noopener noreferrer">GST Schema Engine ↗</a></span><small>Python · Sentence Transformers · JSONL</small></div><p>I fine-tuned MiniLM embeddings with hard-negative mining to map 287 financial header variants to 61 canonical fields. Confidence thresholds and collision handling catch ambiguous matches; the model gained 8.7% in Top-1 accuracy and 9.4% in macro F1, while batch encoding cut latency about 15×.</p></article>
+          <article class="item"><div><span class="item-title"><a href="https://github.com/kshgrshrn/tdms-assistant-hybrid" target="_blank" rel="noopener noreferrer">Multilingual Text-to-SQL ↗</a></span><small>Python · FastAPI · Ollama · ChromaDB · PostgreSQL</small></div><p>The service searches the <span class="hover-text">database schema</span> before asking a local model to generate SQL. Pruning irrelevant context and tuning inference cut query time from about 50 seconds to 4; four services run together through Docker Compose.</p></article>
+          <article class="item"><div><span class="item-title"><a href="https://github.com/kshgrshrn/Semantic-GST-Schema-Standardization-Engine" target="_blank" rel="noopener noreferrer">GST Schema Engine ↗</a></span><small>Python · Sentence Transformers · JSONL</small></div><p>I fine-tuned MiniLM embeddings with hard-negative mining to map 287 financial header variants to 61 canonical fields. Confidence thresholds and collision handling catch <span class="hover-text">ambiguous matches</span>; the model gained 8.7% in Top-1 accuracy and 9.4% in macro F1, while batch encoding cut latency about 15×.</p></article>
         </div>
       </section>
 
@@ -104,7 +107,7 @@
       <section id="contact" aria-labelledby="contact-title">
         <h2 id="contact-title">Contact</h2>
         <p><a href="mailto:kushagrasharan2006@gmail.com">kushagrasharan2006@gmail.com</a></p>
-        <div class="social"><a href="https://github.com/kshgrshrn" target="_blank" rel="noopener noreferrer">GitHub</a><a href="https://www.linkedin.com/in/kushagrasharan/" target="_blank" rel="noopener noreferrer">LinkedIn</a></div>
+        <div class="social"><a href="https://github.com/kshgrshrn" target="_blank" rel="noopener noreferrer">GitHub</a><a href="https://www.linkedin.com/in/kushagrasharan/" target="_blank" rel="noopener noreferrer">LinkedIn</a><a href="https://x.com/kshgrshrn" target="_blank" rel="noopener noreferrer">X</a></div>
       </section>
     </main>
     <footer><span>Manipal, India</span><a href="#top">Back to top ↑</a></footer>
