@@ -61,6 +61,87 @@
     @media(max-width:560px){.page{width:calc(100% - 36px)}header{padding-top:22px}.name{font-size:21px}nav{gap:13px;font-size:13px}main{padding-top:25px}section{margin-bottom:39px}.item,.interest-list .item{grid-template-columns:1fr;gap:2px;padding:11px 0}.item p{max-width:58ch}footer{font-size:12px}}
     @media(max-width:390px){header{flex-wrap:wrap;gap:13px}nav{width:100%;justify-content:space-between}}
     @media(prefers-reduced-motion:reduce){:root{scroll-behavior:auto}*,*::before,*::after{transition-duration:.01ms!important}.reading-trace{display:none}}
+
+    /* Marginal diagrams never change the reading column or row geometry. */
+    #projects .item{position:relative;--signal:#344f64;--signal-soft:#8b9ca8}
+    #projects .item:nth-child(2){--signal:#806447;--signal-soft:#b1a18d}
+    .project-diagram{display:none;position:absolute;left:calc(100% + 32px);top:50%;width:min(280px,calc((100vw - 700px)/2 - 52px));transform:translateY(-50%);color:#999;pointer-events:auto;transition:color .4s ease}
+    .project-diagram::before{content:"";position:absolute;top:0;bottom:0;right:100%;width:32px}
+    .project-diagram svg{display:block;width:100%;height:auto;overflow:visible}
+    .project-diagram .wire{fill:none;stroke:currentColor;stroke-width:1;vector-effect:non-scaling-stroke}
+    .project-diagram .faint{opacity:.35}
+    .project-diagram .packet{fill:none;stroke:var(--signal);stroke-width:1.4;stroke-dasharray:3 96;opacity:1;transition:stroke-width .4s ease}
+    .project-diagram .packet path{animation:data-flow 12s linear infinite}
+    .project-diagram .node{fill:#fff;stroke:currentColor;stroke-width:1}
+    .project-diagram .pulse{fill:var(--signal);transform-box:fill-box;transform-origin:center;animation:node-pulse 5s ease-in-out infinite}
+    .project-diagram text{fill:#777;font:9px ui-monospace,SFMono-Regular,Consolas,monospace;letter-spacing:.02em}
+    #projects .item:hover .project-diagram,#projects .item:focus-within .project-diagram{color:#444}
+    .project-diagram .faint{transition:opacity .4s ease}
+    .project-diagram .faint rect{fill:transparent;transition:fill .4s ease}
+    .project-diagram .signal-ring{fill:none;stroke:var(--signal);stroke-width:.7;opacity:0;transform-box:fill-box;transform-origin:center;pointer-events:none}
+    #projects .item:is(:hover,:focus-within) .packet{stroke-width:1.8}
+    #projects .item:is(:hover,:focus-within) .packet path{animation-duration:4s}
+    #projects .item:is(:hover,:focus-within) .faint{opacity:.65}
+    #projects .item:is(:hover,:focus-within) .faint rect{fill:color-mix(in srgb,var(--signal) 7%,transparent)}
+    #projects .item:is(:hover,:focus-within) .signal-ring{animation:signal-echo 2.4s ease-out infinite}
+    #projects .item:is(:hover,:focus-within) .signal-ring:nth-child(2){animation-delay:.8s}
+    @keyframes signal-echo{0%{opacity:0;transform:scale(.5)}20%{opacity:.45}100%{opacity:0;transform:scale(2.5)}}
+    #projects .item:hover .pulse,#projects .item:focus-within .pulse{fill:var(--signal)}
+    #projects .item-title a::after{background:linear-gradient(90deg,var(--signal),var(--signal-soft))}
+    #projects .item:hover .item-title,#projects .item:focus-within .item-title{color:var(--signal)}
+    .name{display:inline-block;transition:transform .35s ease}
+    .name:hover{transform:translateY(-1px)}
+    @supports(background-clip:text){
+      h1,h2,.name{background-image:linear-gradient(110deg,#171717 25%,#344f64 42%,#806447 49%,#171717 65%);background-size:250% 100%;background-position:100% 0;background-clip:text;-webkit-background-clip:text;color:transparent;transition:background-position .8s ease,transform .35s ease}
+      h1:hover,h2:hover,.name:hover,.name:focus-visible{background-position:0 0}
+    }
+    .hover-text{background-image:linear-gradient(90deg,#344f64,#b1a18d,#344f64)}
+    @keyframes data-flow{to{stroke-dashoffset:-198}}
+    @keyframes node-pulse{0%,100%{opacity:.3;transform:scale(.75)}50%{opacity:.9;transform:scale(1.15)}}
+    @media(min-width:1140px){.project-diagram{display:block}}
+    @media(prefers-reduced-motion:reduce){.project-diagram *{animation:none!important}.name:hover{transform:none}}
+
+    #experience .section-list{position:relative}
+    .project-diagram.experience-timeline{top:0;height:100%;transform:none;--signal:#344f64;--first-stop:30%;--last-stop:80%}
+    .timeline-track{position:absolute;left:15.714%;top:var(--first-stop);bottom:calc(100% - var(--last-stop));width:1px;background:#ddd}
+    .timeline-track::after{content:"";position:absolute;left:-1px;width:3px;height:5px;border-radius:2px;background:var(--signal);animation:timeline-travel 8s linear infinite}
+    .timeline-stop{position:absolute;left:0;width:100%;transform:translateY(-50%)}
+    .timeline-stop:first-of-type{top:var(--first-stop)}
+    .timeline-stop:last-of-type{top:var(--last-stop);--signal:#806447}
+    #experience .section-list:has(.item:hover) .experience-timeline,.experience-timeline:hover{color:#444}
+    #experience .section-list:has(.item:hover) .signal-ring,.experience-timeline:hover .signal-ring{animation:signal-echo 2.4s ease-out infinite}
+    #experience .section-list:has(.item:hover) .timeline-track::after,.experience-timeline:hover .timeline-track::after{animation-duration:3s}
+    @keyframes timeline-travel{0%{top:100%;opacity:0}10%,90%{opacity:.75}100%{top:0;opacity:0}}
+    @media(prefers-reduced-motion:reduce){.timeline-track::after{animation:none;top:50%}}
+
+
+    /* Scattered margin study — isolated experiment. */
+    .margin-study{position:relative}
+    .margin-art{--signal:#344f64;width:min(180px,calc((100vw - 700px)/2 - 52px));color:#a6a6a6}
+    .margin-art.left{left:auto;right:calc(100% + 32px)}
+    .margin-art.left::before{right:auto;left:100%}
+    .margin-art.warm{--signal:#806447}
+    .margin-art .orbit{transform-origin:90px 80px;animation:orbit-drift 32s linear infinite}
+    .margin-art .orbit.reverse{animation-direction:reverse;animation-duration:44s}
+    .margin-art .lattice-layer{transition:transform .7s cubic-bezier(.2,.7,.3,1)}
+    .margin-art .wave-bar{transform-box:fill-box;transform-origin:center;animation:wave-breathe 4s ease-in-out infinite;animation-delay:var(--beat,0s)}
+    .margin-study:has(.margin-art:hover) .margin-art,.margin-study:has(a:focus-visible) .margin-art{color:#666}
+    .margin-art:hover .orbit{animation-duration:12s}
+    .margin-art:hover .lattice-layer:first-child{transform:translateY(-6px)}
+    .margin-art:hover .lattice-layer:last-child{transform:translateY(6px)}
+    .margin-art:hover .signal-ring{animation:signal-echo 2.4s ease-out infinite}
+    .margin-art:hover .packet path{animation-duration:4s}
+    .margin-art:hover .wave-bar{animation-duration:1.5s;stroke:var(--signal)}
+    @keyframes orbit-drift{to{transform:rotate(360deg)}}
+    @keyframes wave-breathe{0%,100%{transform:scaleY(.7);opacity:.4}50%{transform:scaleY(1);opacity:.8}}
+    .margin-art .film-frame{fill:transparent;stroke:currentColor;stroke-width:1;transition:transform .5s ease}
+    .margin-art .film-light{fill:var(--signal);animation:film-exposure 9s ease-in-out infinite;opacity:.025}
+    .margin-art .film-light:nth-child(2){animation-delay:-6s}
+    .margin-art .film-light:nth-child(3){animation-delay:-3s}
+    .margin-art:hover .film-light{animation-duration:4.5s}
+    .margin-art:hover .film-frame:nth-child(1){transform:translateY(-3px)}
+    .margin-art:hover .film-frame:nth-child(3){transform:translateY(3px)}
+    @keyframes film-exposure{0%,65%,100%{opacity:.015}15%,40%{opacity:.13}}
   </style>
 </head>
 <body>
@@ -72,11 +153,17 @@
       <nav aria-label="Main navigation"><a href="#about">about</a><a href="#experience">experience</a><a href="#projects">projects</a><a href="#contact">contact</a></nav>
     </header>
     <main id="main">
-      <section class="about" id="about" aria-labelledby="about-title">
+      <section class="about margin-study" id="about" aria-labelledby="about-title">
         <h1 id="about-title">About</h1>
         <p>Hi, I’m Kushagra. I’m a third-year B.Tech student in Data Science and Engineering at Manipal Institute of Technology, graduating in 2028.</p>
         <p>Most of my recent projects are about the system around a model: selecting <span class="hover-text">schema context</span>, running inference locally, validating generated queries, and measuring output quality. I like tracing an answer through those stages to find where it came from and where it could break.</p>
         <p class="muted">I was an AI/ML intern at the Centre for Railway Information Systems, where I built tools for railway data. I’d like to work on AI research and engineering, especially the systems around language models. For now, I’m learning by building software, measuring changes, and tracing bugs to their source.</p>
+      <div class="project-diagram margin-art left" aria-hidden="true"><svg viewBox="0 0 180 170" fill="none">
+<g class="wire faint"><path d="M90 15V145 M25 80H155"/><circle cx="90" cy="80" r="52"/><ellipse cx="90" cy="80" rx="63" ry="23" transform="rotate(-35 90 80)"/><ellipse cx="90" cy="80" rx="63" ry="23" transform="rotate(35 90 80)"/></g>
+<g class="orbit"><circle class="node" cx="142" cy="80" r="3"/><path class="wire" d="M138 61A52 52 0 0 1 142 80"/></g>
+<g class="orbit reverse"><circle class="pulse" cx="38" cy="80" r="2"/></g>
+<circle class="pulse" cx="90" cy="80" r="2.5"/><circle class="signal-ring" cx="90" cy="80" r="7"/>
+</svg></div>
       </section>
 
       <section id="experience" aria-labelledby="experience-title">
@@ -84,31 +171,100 @@
         <div class="section-list">
           <article class="item"><div><span class="item-title">Centre for Railway Information Systems</span><small>AI/ML Intern · May—August 2026</small></div><p>I built a Text-to-SQL system that retrieves railway schema context, generates queries locally, and validates them before execution. I also built metadata-discovery tools for large IBM Db2 environments, using graph representations, vector search, and LLM-generated descriptions.</p></article>
           <article class="item"><div><span class="item-title">Ernst &amp; Young</span><small>AI Intern · Tax Technology · July—August 2025</small></div><p>In eight weeks, I shipped four systems: NLP pipelines, a financial assistant, a live analytics dashboard, and invoice automation. I fine-tuned MiniLM embeddings for financial schema matching.</p></article>
+          <div class="project-diagram experience-timeline" aria-hidden="true">
+            <div class="timeline-track"></div>
+            <svg class="timeline-stop" viewBox="0 0 280 64" fill="none">
+              <path class="wire faint" d="M44 32H90 M90 17V47 M90 17H98 M90 47H98"/>
+              <circle class="node" cx="44" cy="32" r="6"/><circle class="pulse" cx="44" cy="32" r="2.5"/><circle class="signal-ring" cx="44" cy="32" r="6"/>
+              <text x="111" y="24">CRIS · 2026</text><text x="111" y="41">May — August</text>
+            </svg>
+            <svg class="timeline-stop" viewBox="0 0 280 64" fill="none">
+              <path class="wire faint" d="M44 32H90 M90 17V47 M90 17H98 M90 47H98"/>
+              <circle class="node" cx="44" cy="32" r="6"/><circle class="pulse" cx="44" cy="32" r="2.5" style="animation-delay:-2.5s"/><circle class="signal-ring" cx="44" cy="32" r="6"/>
+              <text x="111" y="24">EY · 2025</text><text x="111" y="41">July — August</text>
+            </svg>
+          </div>
         </div>
       </section>
 
       <section id="projects" aria-labelledby="projects-title">
         <h2 id="projects-title">Selected projects</h2>
         <div class="section-list">
-          <article class="item"><div><span class="item-title"><a href="https://github.com/kshgrshrn/tdms-assistant-hybrid" target="_blank" rel="noopener noreferrer">Multilingual Text-to-SQL ↗</a></span><small>Python · FastAPI · Ollama · ChromaDB · PostgreSQL</small></div><p>The service searches the <span class="hover-text">database schema</span> before asking a local model to generate SQL. Pruning irrelevant context and tuning inference cut query time from about 50 seconds to 4; four services run together through Docker Compose.</p></article>
-          <article class="item"><div><span class="item-title"><a href="https://github.com/kshgrshrn/Semantic-GST-Schema-Standardization-Engine" target="_blank" rel="noopener noreferrer">GST Schema Engine ↗</a></span><small>Python · Sentence Transformers · JSONL</small></div><p>I fine-tuned MiniLM embeddings with hard-negative mining to map 287 financial header variants to 61 canonical fields. Confidence thresholds and collision handling catch <span class="hover-text">ambiguous matches</span>; the model gained 8.7% in Top-1 accuracy and 9.4% in macro F1, while batch encoding cut latency about 15×.</p></article>
+          <article class="item"><div><span class="item-title"><a href="https://github.com/kshgrshrn/tdms-assistant-hybrid" target="_blank" rel="noopener noreferrer">Multilingual Text-to-SQL ↗</a></span><small>Python · FastAPI · Ollama · ChromaDB · PostgreSQL</small></div><p>The service searches the <span class="hover-text">database schema</span> before asking a local model to generate SQL. Pruning irrelevant context and tuning inference cut query time from about 50 seconds to 4; four services run together through Docker Compose.</p><div class="project-diagram" aria-hidden="true"><svg viewBox="0 0 280 144" fill="none">
+<!-- Database path: retrieve context, generate SQL, validate, execute, return. -->
+<g class="wire faint">
+  <path d="M12 22H52V46H30L21 53V46H12Z M20 30H43 M20 37H36"/>
+  <path d="M116 23L136 13L156 23V43L136 54L116 43Z M116 23L136 34L156 23 M136 34V54 M116 33L136 44L156 33"/>
+  <rect x="220" y="19" width="40" height="32" rx="2"/>
+  <path d="M229 27L240 35L251 27 M229 43L240 35L251 43"/>
+  <path d="M222 88H250L258 96V119H222Z M250 88V96H258 M228 102L233 107L242 98 M228 113H250"/>
+  <ellipse cx="136" cy="92" rx="20" ry="6"/>
+  <path d="M116 92V113C116 121 156 121 156 113V92 M116 103C116 111 156 111 156 103"/>
+  <rect x="12" y="90" width="40" height="28" rx="1"/>
+  <path d="M12 99H52 M12 108H52 M25 90V118"/>
+</g>
+<g class="wire">
+  <path d="M52 35H116 M156 35H220 M260 35H272Q276 35 276 39V100Q276 104 272 104H258 M222 104H156 M116 104H52"/>
+  <path d="M108 32L112 35L108 38 M212 32L216 35L212 38 M262 101L258 104L262 107 M164 101L160 104L164 107 M60 101L56 104L60 107"/>
+</g>
+<g class="packet">
+  <path pathLength="99" d="M52 35H116"/>
+  <path pathLength="99" d="M156 35H220" style="animation-delay:-2s"/>
+  <path pathLength="99" d="M260 35H272Q276 35 276 39V100Q276 104 272 104H258" style="animation-delay:-4s"/>
+  <path pathLength="99" d="M222 104H156" style="animation-delay:-6s"/>
+  <path pathLength="99" d="M116 104H52" style="animation-delay:-8s"/>
+</g>
+<g><circle class="signal-ring" cx="240" cy="35" r="5"/><circle class="signal-ring" cx="136" cy="104" r="5"/></g>
+<circle class="pulse" cx="240" cy="35" r="2.5"/>
+<circle class="pulse" cx="136" cy="104" r="2" style="animation-delay:-2.5s"/>
+<g text-anchor="middle">
+  <text x="32" y="9">EN · HI · Hinglish</text>
+  <text x="32" y="67">question</text><text x="136" y="67">schema search</text><text x="236" y="67">local model</text>
+  <text x="32" y="138">answer</text><text x="136" y="138">PostgreSQL</text><text x="240" y="138">SQL check</text>
+</g>
+</svg></div></article>
+          <article class="item"><div><span class="item-title"><a href="https://github.com/kshgrshrn/Semantic-GST-Schema-Standardization-Engine" target="_blank" rel="noopener noreferrer">GST Schema Engine ↗</a></span><small>Python · Sentence Transformers · JSONL</small></div><p>I fine-tuned MiniLM embeddings with hard-negative mining to map 287 financial header variants to 61 canonical fields. Confidence thresholds and collision handling catch <span class="hover-text">ambiguous matches</span>; the model gained 8.7% in Top-1 accuracy and 9.4% in macro F1, while batch encoding cut latency about 15×.</p><div class="project-diagram" aria-hidden="true"><svg viewBox="0 0 280 154" fill="none">
+<g class="wire faint"><path d="M23 24C81 24 75 52 125 52 M23 50C81 50 75 52 125 52 M23 76C81 76 75 52 125 52 M23 102C81 102 75 100 125 100 M23 128C81 128 75 100 125 100 M125 52L224 42 M125 52L224 76 M125 100L224 76 M125 100L224 110"/><path d="M110 38H140V66H110Z M110 86H140V114H110Z M214 32H258V52H214Z M214 66H258V86H214Z M214 100H258V120H214Z"/></g>
+<g class="packet"><path pathLength="99" d="M23 24C81 24 75 52 125 52L224 42"/><path pathLength="99" d="M23 76C81 76 75 52 125 52L224 76" style="animation-delay:-4s"/><path pathLength="99" d="M23 128C81 128 75 100 125 100L224 110" style="animation-delay:-8s"/></g>
+<g class="node"><circle cx="23" cy="24" r="3"/><circle cx="23" cy="50" r="3"/><circle cx="23" cy="76" r="3"/><circle cx="23" cy="102" r="3"/><circle cx="23" cy="128" r="3"/></g><g><circle class="signal-ring" cx="125" cy="52" r="5"/><circle class="signal-ring" cx="125" cy="100" r="5"/></g><circle class="pulse" cx="125" cy="52" r="3"/><circle class="pulse" cx="125" cy="100" r="3" style="animation-delay:-2.5s"/>
+<text x="14" y="150">variants</text><text x="108" y="150">match</text><text x="216" y="150">fields</text>
+</svg></div></article>
         </div>
       </section>
 
-      <section aria-labelledby="interests-title">
+      <section class="margin-study" aria-labelledby="interests-title">
         <h2 id="interests-title">What I’m curious about</h2>
         <div class="section-list interest-list">
           <div class="item"><span class="item-title">Model systems</span><p>Inference optimization, retrieval, and evaluation. I’m interested in the engineering choices that change what a model can answer and how long it takes.</p></div>
           <div class="item"><span class="item-title">Model behavior</span><p>Mechanistic interpretability, alignment, and steerability. I’m curious how a model’s internal representations relate to its outputs, and how interventions change its behavior.</p></div>
           <div class="item"><span class="item-title">Computation</span><p>Distributed systems, GPU programming, scientific computing, and the mathematics behind machine learning.</p></div>
         </div>
+      <div class="project-diagram margin-art left" aria-hidden="true"><svg viewBox="0 0 180 190" fill="none">
+<g class="wire faint"><path d="M28 51V119 M90 22V90 M152 51V119 M90 80V148"/></g>
+<g class="wire">
+<g class="lattice-layer"><path d="M28 51L90 22L152 51L90 80Z M48 41L110 70 M69 32L131 61 M49 61L111 32 M69 70L131 41" opacity=".35"/></g>
+<g class="lattice-layer"><path d="M28 85L90 56L152 85L90 114Z M48 75L110 104 M69 66L131 95 M49 95L111 66 M69 104L131 75" opacity=".45"/></g>
+<g class="lattice-layer"><path d="M28 119L90 90L152 119L90 148Z M48 109L110 138 M69 100L131 129 M49 129L111 100 M69 138L131 109" opacity=".35"/></g>
+</g>
+<g class="packet"><path pathLength="99" d="M28 119L90 148L152 119V51L90 22"/><path pathLength="99" d="M28 51L90 80L152 51" style="animation-delay:-5s"/></g>
+<circle class="pulse" cx="90" cy="85" r="2"/><circle class="signal-ring" cx="90" cy="85" r="6"/>
+</svg></div>
       </section>
 
-      <section class="more" aria-labelledby="more-title">
+      <section class="more margin-study" aria-labelledby="more-title">
         <h2 id="more-title">Away from the screen</h2>
         <p>I read about physics, mathematics, and the philosophy of science, then usually end up following a reference into another field. Away from work, I’m into books, electronic music, and films that take an unconventional route.</p>
         <p class="section-note">Before focusing on AI, I led human-factors engineering for a 50+ person team in the NASA Space Settlement Design Competition. Our team was a national winner, Asian regional winner, and international runner-up.</p>
         <p><a href="resume.pdf" target="_blank" rel="noopener noreferrer">Résumé ↗</a></p>
+      <div class="project-diagram margin-art warm" aria-hidden="true"><svg viewBox="0 0 180 140" fill="none">
+<g class="wire faint"><path d="M10 25H170V115H10Z M10 36H170 M10 104H170"/>
+<path d="M17 29H22V32H17Z M17 108H22V111H17Z"/><path d="M29 29H34V32H29Z M29 108H34V111H29Z"/><path d="M41 29H46V32H41Z M41 108H46V111H41Z"/><path d="M53 29H58V32H53Z M53 108H58V111H53Z"/><path d="M65 29H70V32H65Z M65 108H70V111H65Z"/><path d="M77 29H82V32H77Z M77 108H82V111H77Z"/><path d="M89 29H94V32H89Z M89 108H94V111H89Z"/><path d="M101 29H106V32H101Z M101 108H106V111H101Z"/><path d="M113 29H118V32H113Z M113 108H118V111H113Z"/><path d="M125 29H130V32H125Z M125 108H130V111H125Z"/><path d="M137 29H142V32H137Z M137 108H142V111H137Z"/><path d="M149 29H154V32H149Z M149 108H154V111H149Z"/><path d="M161 29H166V32H161Z M161 108H166V111H161Z"/></g>
+<g><rect class="film-light" x="18" y="43" width="42" height="54"/><rect class="film-light" x="69" y="43" width="42" height="54"/><rect class="film-light" x="120" y="43" width="42" height="54"/></g>
+<g>
+<g class="film-frame"><rect x="18" y="43" width="42" height="54"/><path d="M18 82L32 69L43 78L51 73L60 82" opacity=".45"/><circle cx="46" cy="58" r="4" opacity=".45"/></g>
+<g class="film-frame"><rect x="69" y="43" width="42" height="54"/><path d="M69 84H111 M83 84V61H98V84 M87 67H94 M87 73H94" opacity=".45"/></g>
+<g class="film-frame"><rect x="120" y="43" width="42" height="54"/><path d="M120 81Q130 75 141 81T162 81 M120 87Q130 81 141 87T162 87" opacity=".45"/><path d="M138 56V64 M134 60H142" opacity=".45"/></g>
+</g></svg></div>
       </section>
 
       <section id="contact" aria-labelledby="contact-title">
@@ -121,6 +277,17 @@
   </div>
   <script>
     (function(){
+      var experienceList=document.querySelector("#experience .section-list");
+      var timeline=experienceList.querySelector(".experience-timeline");
+      function alignTimeline(){
+        var roles=experienceList.querySelectorAll(".item");
+        ["--first-stop","--last-stop"].forEach(function(property,index){
+          timeline.style.setProperty(property,(roles[index].offsetTop+roles[index].offsetHeight/2)+"px");
+        });
+      }
+      if("ResizeObserver" in window)new ResizeObserver(alignTimeline).observe(experienceList);
+      else addEventListener("resize",alignTimeline);
+      alignTimeline();
       var reduced=matchMedia("(prefers-reduced-motion: reduce)").matches;
       var trace=document.querySelector(".reading-trace span");
       var header=document.querySelector("header");
