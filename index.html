@@ -148,25 +148,9 @@
     .margin-art:hover .film-frame:nth-child(1){transform:translateY(-3px)}
     .margin-art:hover .film-frame:nth-child(3){transform:translateY(3px)}
     @keyframes film-exposure{0%,65%,100%{opacity:.015}15%,40%{opacity:.13}}
-    /* Satellite study — independently reversible. */
-    .orbiting-satellite{position:fixed;top:0;left:0;z-index:20;width:58px;height:38px;pointer-events:none;color:#7f8d96;opacity:.7;filter:drop-shadow(0 1px 1px #fff);animation:satellite-route 90s linear infinite}
-    .orbiting-satellite svg{display:block;width:100%;height:100%;overflow:visible}
-    .orbiting-satellite .sat-wire{fill:none;stroke:currentColor;stroke-width:1.1;vector-effect:non-scaling-stroke}
-    .orbiting-satellite .sat-core{fill:#fff;stroke:currentColor;stroke-width:1.1}
-    .orbiting-satellite .sat-signal{fill:none;stroke:#344f64;stroke-width:.9;opacity:.45;transform-box:fill-box;transform-origin:center;animation:satellite-signal 4s ease-out infinite}
-    .orbiting-satellite .sat-signal.delay{animation-delay:1.4s}
-    @keyframes satellite-route{0%{left:30px;top:70px;transform:rotate(25deg)}25%{left:calc(100vw - 90px);top:70px;transform:rotate(115deg)}50%{left:calc(100vw - 90px);top:calc(100vh - 70px);transform:rotate(205deg)}75%{left:30px;top:calc(100vh - 70px);transform:rotate(295deg)}100%{left:30px;top:70px;transform:rotate(385deg)}}
-    @keyframes satellite-signal{0%{opacity:.4;transform:scale(.45)}100%{opacity:0;transform:scale(1.8)}}
-    @media(max-width:700px){.orbiting-satellite{width:38px;height:25px;opacity:.55}@keyframes satellite-route{0%{left:12px;top:85px;transform:rotate(25deg)}25%{left:calc(100vw - 55px);top:85px;transform:rotate(115deg)}50%{left:calc(100vw - 55px);top:calc(100vh - 55px);transform:rotate(205deg)}75%{left:12px;top:calc(100vh - 55px);transform:rotate(295deg)}100%{left:12px;top:85px;transform:rotate(385deg)}}}
-    @media(prefers-reduced-motion:reduce){.orbiting-satellite{display:none}}
   </style>
 </head>
 <body>
-  <div class="orbiting-satellite" aria-hidden="true"><svg viewBox="0 0 58 38" fill="none">
-    <g class="sat-wire"><rect x="1" y="12" width="18" height="14" rx="1"/><path d="M7 12V26 M13 12V26 M1 19H19 M39 12H57V26H39Z M45 12V26 M51 12V26 M39 19H57 M19 19H24 M34 19H39 M28 13V9 M24 9H32"/></g>
-    <path class="sat-core" d="M24 15L29 12L34 15V23L29 26L24 23Z"/><circle class="sat-core" cx="29" cy="19" r="1.5"/>
-    <circle class="sat-signal" cx="29" cy="19" r="8"/><circle class="sat-signal delay" cx="29" cy="19" r="8"/>
-  </svg></div>
   <div class="reading-trace" aria-hidden="true"><span></span></div>
   <a class="skip" href="#main">Skip to content</a>
   <div class="page">
