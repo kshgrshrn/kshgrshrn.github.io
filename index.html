@@ -115,6 +115,12 @@
     @media(prefers-reduced-motion:reduce){.timeline-track::after{animation:none;top:50%}}
 
 
+    /* About background study — independently reversible. */
+    #about{isolation:isolate}
+    #about::before{content:"";position:absolute;inset:-18px -18px -12px;z-index:-1;pointer-events:none;background:repeating-radial-gradient(ellipse 190px 145px at 74% 48%,transparent 0 19px,rgba(52,79,100,.075) 19.5px 20px,transparent 20.5px 39px);mask-image:radial-gradient(ellipse 52% 75% at 74% 48%,#000 9%,transparent 85%);opacity:.6;transform:scale(1);transition:opacity .8s ease,transform 1.4s cubic-bezier(.2,.7,.3,1)}
+    #about:hover::before{opacity:1;transform:scale(1.035)}
+    @media(max-width:700px){#about::before{opacity:.3;inset:0}}
+    @media(prefers-reduced-motion:reduce){#about::before{transition:none;transform:none!important}}
     /* Scattered margin study — isolated experiment. */
     .margin-study{position:relative}
     .margin-art{--signal:#344f64;width:min(180px,calc((100vw - 700px)/2 - 52px));color:#a6a6a6}
